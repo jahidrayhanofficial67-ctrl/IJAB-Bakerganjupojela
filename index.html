@@ -44,6 +44,56 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #198754; border-radius: 4px; }
+
+        /* Print Styles for Official Financial Report */
+        @media print {
+            @page { margin: 12mm; size: A4; }
+            body {
+                height: auto !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body > *:not(#report-modal) {
+                display: none !important;
+            }
+            #report-modal {
+                position: static !important;
+                display: block !important;
+                background: #ffffff !important;
+                padding: 0 !important;
+                inset: auto !important;
+                z-index: auto !important;
+                backdrop-filter: none !important;
+            }
+            #report-modal-content {
+                max-width: 100% !important;
+                width: 100% !important;
+                max-height: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                transform: none !important;
+                opacity: 1 !important;
+                overflow: visible !important;
+            }
+            #report-printable-body {
+                overflow: visible !important;
+                max-height: none !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: flex !important;
+            }
+            table { page-break-inside: auto; border-collapse: collapse; width: 100%; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+        }
     </style>
 </head>
 <body class="text-gray-800 flex flex-col h-screen overflow-hidden relative">
@@ -147,11 +197,16 @@
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center mb-2 border-b pb-2">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2 border-b pb-3">
                     <h3 class="font-bold text-gray-800 text-lg">লেনদেনের খতিয়ান</h3>
-                    <button onclick="openTransactionModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm transition flex items-center gap-1">
-                        <i class="fas fa-plus"></i> আয়/ব্যয় যুক্ত করুন
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openReportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-lg font-bold text-sm shadow-sm transition flex items-center gap-1.5">
+                            <i class="fas fa-file-invoice"></i> রিপোর্ট ও প্রিন্ট
+                        </button>
+                        <button onclick="openTransactionModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-lg font-bold text-sm shadow-sm transition flex items-center gap-1.5">
+                            <i class="fas fa-plus"></i> আয়/ব্যয় যুক্ত
+                        </button>
+                    </div>
                 </div>
 
                 <div id="transactions-list" class="flex flex-col gap-3"></div>
@@ -381,6 +436,11 @@
                         <span class="text-xs bg-white px-2 py-0.5 rounded border border-gray-200 mt-1 inline-block" id="t-member-union">ইউনিয়ন</span>
                     </div>
 
+                    <div id="t-union-container" class="hidden mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">শাখা/ইউনিয়ন <span class="text-red-500">*</span></label>
+                        <select id="t-union" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white"></select>
+                    </div>
+
                     <div class="mb-4">
                         <label class="block text-sm font-bold text-gray-700 mb-1">ধরণ <span class="text-red-500">*</span></label>
                         <select id="t-type" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white">
@@ -430,8 +490,161 @@
         </div>
     </div>
 
+    <!-- FINANCIAL & EYANAT REPORT MODAL (WITH PRINT) -->
+    <div id="report-modal" class="fixed inset-0 bg-black/60 z-[70] hidden flex-col items-center justify-center backdrop-blur-sm p-2 sm:p-4">
+        <div class="bg-white rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] transition-all transform scale-95 opacity-0" id="report-modal-content">
+            <!-- Modal Top Bar (Hidden on Print) -->
+            <div class="dynamic-bg p-3.5 sm:p-4 text-white flex justify-between items-center shrink-0 no-print">
+                <h3 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                    <i class="fas fa-file-invoice-dollar"></i> আর্থিক ও ইয়ানত রিপোর্ট
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="printReport()" class="bg-white text-gray-800 hover:bg-yellow-300 px-3 py-1.5 rounded-lg font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5">
+                        <i class="fas fa-print text-primary"></i> প্রিন্ট / PDF
+                    </button>
+                    <button onclick="closeModal('report-modal')" class="text-white/80 hover:text-white bg-white/10 w-8 h-8 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Bar (Hidden on Print) -->
+            <div class="p-3 bg-gray-100 border-b border-gray-200 flex flex-col sm:flex-row gap-2 shrink-0 no-print">
+                <div class="flex-1">
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1">শাখা / ইউনিয়ন নির্বাচন করুন:</label>
+                    <select id="report-union-select" onchange="generateFinancialReport()" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white outline-none focus:border-primary"></select>
+                </div>
+                <div class="sm:w-48">
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1">ইয়ানত তালিকা ফিল্টার:</label>
+                    <select id="report-member-type" onchange="generateFinancialReport()" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white outline-none focus:border-primary">
+                        <option value="leaders">শুধুমাত্র দায়িত্বশীল</option>
+                        <option value="all">দায়িত্বশীল ও সদস্য (সবাই)</option>
+                        <option value="members">শুধুমাত্র সদস্য</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Printable Report Body -->
+            <div id="report-printable-body" class="p-4 sm:p-6 overflow-y-auto flex-1 bg-white">
+                <!-- Official Report Header -->
+                <div class="text-center border-b-2 border-gray-800 pb-3 mb-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">ইসলামী যুব আন্দোলন বাংলাদেশ</h2>
+                    <p class="text-sm sm:text-base font-bold text-gray-700" id="rep-branch-title">বাকেরগঞ্জ উপজেলা শাখা</p>
+                    <div class="mt-1 inline-block bg-gray-100 px-3 py-0.5 rounded-full border border-gray-300 text-xs font-bold text-gray-700">
+                        আর্থিক ও ইয়ানত আদায়ের পূর্ণাঙ্গ রিপোর্ট
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">রিপোর্ট তৈরির তারিখ: <span id="rep-date"></span></p>
+                </div>
+
+                <!-- Summary Boxes -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-5">
+                    <div class="border border-green-300 bg-green-50 rounded-lg p-2.5 text-center">
+                        <p class="text-[11px] sm:text-xs font-bold text-green-800">মোট আয় (ইয়ানত ও অন্যান্য)</p>
+                        <h4 class="text-base sm:text-xl font-bold text-green-700 mt-0.5" id="rep-total-income">৳০</h4>
+                    </div>
+                    <div class="border border-red-300 bg-red-50 rounded-lg p-2.5 text-center">
+                        <p class="text-[11px] sm:text-xs font-bold text-red-800">মোট ব্যয়</p>
+                        <h4 class="text-base sm:text-xl font-bold text-red-700 mt-0.5" id="rep-total-expense">৳০</h4>
+                    </div>
+                    <div class="border border-blue-300 bg-blue-50 rounded-lg p-2.5 text-center">
+                        <p class="text-[11px] sm:text-xs font-bold text-blue-800">বর্তমান জমা (তহবিল)</p>
+                        <h4 class="text-base sm:text-xl font-bold text-blue-700 mt-0.5" id="rep-current-balance">৳০</h4>
+                    </div>
+                </div>
+
+                <!-- Section 1: Member Eyanat Table -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-gray-800 text-sm sm:text-base mb-2 flex items-center gap-1.5 border-l-4 border-green-600 pl-2">
+                        ১. ইয়ানত আদায়ের বিবরণ (<span id="rep-eyanat-subtitle">দায়িত্বশীল</span>)
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs sm:text-sm border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-800">
+                                    <th class="border border-gray-300 px-2 py-1.5 text-center w-10">ক্রম</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left">নাম ও পদবি</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left" id="rep-th-union">শাখা/ইউনিয়ন</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left">আদায়কৃত মাস ও সংখ্যা</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-right w-24">মোট জমা</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rep-eyanat-tbody"></tbody>
+                            <tfoot>
+                                <tr class="bg-green-50 font-bold text-gray-900">
+                                    <td id="rep-eyanat-footer-colspan" colspan="4" class="border border-gray-300 px-2 py-1.5 text-right">ইয়ানত বাবদ মোট জমা:</td>
+                                    <td class="border border-gray-300 px-2 py-1.5 text-right text-green-700" id="rep-eyanat-total">৳০</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 2: Expense Breakdown Table -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-gray-800 text-sm sm:text-base mb-2 flex items-center gap-1.5 border-l-4 border-red-600 pl-2">
+                        ২. খাতওয়ারি ব্যয়ের বিবরণ
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs sm:text-sm border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-800">
+                                    <th class="border border-gray-300 px-2 py-1.5 text-center w-10">ক্রম</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left w-24">তারিখ</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left">ব্যয়ের খাত / বিবরণ</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left" id="rep-exp-th-union">শাখা/ইউনিয়ন</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-right w-24">টাকার পরিমাণ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rep-expense-tbody"></tbody>
+                            <tfoot>
+                                <tr class="bg-red-50 font-bold text-gray-900">
+                                    <td id="rep-exp-footer-colspan" colspan="4" class="border border-gray-300 px-2 py-1.5 text-right">সর্বমোট ব্যয়:</td>
+                                    <td class="border border-gray-300 px-2 py-1.5 text-right text-red-700" id="rep-expense-table-total">৳০</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 3: Other Income Table (Shown only if other general income exists) -->
+                <div id="rep-other-income-section" class="mb-6 hidden">
+                    <h4 class="font-bold text-gray-800 text-sm sm:text-base mb-2 flex items-center gap-1.5 border-l-4 border-blue-600 pl-2">
+                        ৩. অন্যান্য আয়ের বিবরণ
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs sm:text-sm border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-800">
+                                    <th class="border border-gray-300 px-2 py-1.5 text-center w-10">ক্রম</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left w-24">তারিখ</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left">আয়ের খাত / বিবরণ</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-left" id="rep-inc-th-union">শাখা/ইউনিয়ন</th>
+                                    <th class="border border-gray-300 px-2 py-1.5 text-right w-24">টাকার পরিমাণ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rep-other-income-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Official Signatures (Visible clearly on Print) -->
+                <div class="mt-12 pt-4 flex justify-between items-end text-xs sm:text-sm text-gray-800 font-bold print-only">
+                    <div class="text-center">
+                        <div class="border-t border-gray-800 w-28 sm:w-36 pt-1">অর্থ সম্পাদক</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="border-t border-gray-800 w-28 sm:w-36 pt-1">সাধারণ সম্পাদক</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="border-t border-gray-800 w-28 sm:w-36 pt-1">সভাপতি</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Confirm Modal -->
-    <div id="confirm-modal" class="fixed inset-0 bg-black/50 z-[70] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+    <div id="confirm-modal" class="fixed inset-0 bg-black/50 z-[75] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 opacity-0 transition-all" id="confirm-modal-content">
             <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-exclamation-triangle"></i></div>
             <h3 class="text-xl font-bold mb-2 text-gray-800">আপনি কি নিশ্চিত?</h3>
@@ -503,17 +716,23 @@
             const formUnion = document.getElementById('m-union');
             const newAdminUnion = document.getElementById('new-admin-union');
             const exportUnion = document.getElementById('export-union-select');
+            const reportUnion = document.getElementById('report-union-select');
+            const transUnion = document.getElementById('t-union');
             
             filterUnion.innerHTML = '<option value="all">সব শাখা/ইউনিয়ন</option>';
             formUnion.innerHTML = '<option value="">নির্বাচন করুন</option>';
             if(newAdminUnion) newAdminUnion.innerHTML = '<option value="">ইউনিয়ন নির্বাচন করুন</option>';
             if(exportUnion) exportUnion.innerHTML = '<option value="all">সব শাখা/ইউনিয়ন</option>';
+            if(reportUnion) reportUnion.innerHTML = '<option value="all">সকল শাখা/ইউনিয়ন (একসাথে)</option>';
+            if(transUnion) transUnion.innerHTML = '';
 
             UNIONS.forEach(u => {
                 filterUnion.add(new Option(u, u));
                 formUnion.add(new Option(u, u));
                 if(newAdminUnion) newAdminUnion.add(new Option(u, u));
                 if(exportUnion) exportUnion.add(new Option(u, u));
+                if(reportUnion) reportUnion.add(new Option(u, u));
+                if(transUnion) transUnion.add(new Option(u, u));
             });
             populateDesignationDropdown();
         }
@@ -544,6 +763,14 @@
             return number.toString().replace(/[0-9]/g, w => banglaDigits[w]);
         }
 
+        function isSameUnion(transUnion, selectedUnion) {
+            if (selectedUnion === 'all') return true;
+            if (selectedUnion === 'বাকেরগঞ্জ উপজেলা শাখা') {
+                return transUnion === 'বাকেরগঞ্জ উপজেলা শাখা' || transUnion === 'উপজেলা শাখা';
+            }
+            return transUnion === selectedUnion;
+        }
+
         function populateDesignationDropdown() {
             const sel = document.getElementById('m-designation');
             if(sel) {
@@ -558,6 +785,173 @@
             document.getElementById('theme-color-picker').value = currentColor.trim();
             updateAdminListDisplay();
             openModal('settings-modal');
+        }
+
+        // --- FINANCIAL & EYANAT REPORT LOGIC ---
+        window.openReportModal = function() {
+            const unionSelect = document.getElementById('report-union-select');
+            if (currentAdminRole === 'union') {
+                unionSelect.value = currentAdminUnion;
+                unionSelect.disabled = true;
+            } else {
+                unionSelect.disabled = false;
+            }
+            generateFinancialReport();
+            openModal('report-modal');
+        }
+
+        window.generateFinancialReport = function() {
+            const selectedUnion = currentAdminRole === 'union' ? currentAdminUnion : document.getElementById('report-union-select').value;
+            const memberType = document.getElementById('report-member-type').value;
+            const showUnionCol = (selectedUnion === 'all');
+
+            // Set Report Header Info
+            document.getElementById('rep-branch-title').innerText = selectedUnion === 'all' ? 'বাকেরগঞ্জ উপজেলা ও সকল ইউনিয়ন শাখা' : selectedUnion;
+            document.getElementById('rep-date').innerText = new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+            
+            const subLabel = memberType === 'leaders' ? 'দায়িত্বশীল' : (memberType === 'members' ? 'সদস্য' : 'দায়িত্বশীল ও সদস্য');
+            document.getElementById('rep-eyanat-subtitle').innerText = subLabel;
+
+            // Toggle Union Column visibility
+            document.getElementById('rep-th-union').style.display = showUnionCol ? '' : 'none';
+            document.getElementById('rep-exp-th-union').style.display = showUnionCol ? '' : 'none';
+            document.getElementById('rep-inc-th-union').style.display = showUnionCol ? '' : 'none';
+            document.getElementById('rep-eyanat-footer-colspan').colSpan = showUnionCol ? 4 : 3;
+            document.getElementById('rep-exp-footer-colspan').colSpan = showUnionCol ? 4 : 3;
+
+            // Filter Transactions for Selected Branch
+            const branchTrans = transactionsData.filter(t => isSameUnion(t.union, selectedUnion));
+            let totalIncome = 0;
+            let totalExpense = 0;
+            const expenseList = [];
+            const otherIncomeList = [];
+
+            branchTrans.forEach(t => {
+                if (t.type === 'income') {
+                    totalIncome += Number(t.amount || 0);
+                    if (!t.memberId) otherIncomeList.push(t);
+                } else {
+                    totalExpense += Number(t.amount || 0);
+                    expenseList.push(t);
+                }
+            });
+
+            document.getElementById('rep-total-income').innerText = '৳' + convertToBanglaNumber(totalIncome);
+            document.getElementById('rep-total-expense').innerText = '৳' + convertToBanglaNumber(totalExpense);
+            document.getElementById('rep-current-balance').innerText = '৳' + convertToBanglaNumber(totalIncome - totalExpense);
+
+            // 1. Build Member Eyanat Table
+            let filteredMembers = membersData.filter(m => {
+                const matchU = (selectedUnion === 'all') ? true : m.union === selectedUnion;
+                let matchT = true;
+                if (memberType === 'leaders') matchT = m.designation !== 'সদস্য';
+                else if (memberType === 'members') matchT = m.designation === 'সদস্য';
+                return matchU && matchT;
+            });
+
+            filteredMembers.sort((a, b) => {
+                if (showUnionCol && a.union !== b.union) {
+                    return UNIONS.indexOf(a.union) - UNIONS.indexOf(b.union);
+                }
+                let rA = APP_DESIGNATIONS.indexOf(a.designation);
+                let rB = APP_DESIGNATIONS.indexOf(b.designation);
+                rA = rA > -1 ? rA : 999; rB = rB > -1 ? rB : 999;
+                return rA - rB;
+            });
+
+            const eyanatTbody = document.getElementById('rep-eyanat-tbody');
+            eyanatTbody.innerHTML = '';
+            let totalMemberEyanat = 0;
+
+            if (filteredMembers.length === 0) {
+                eyanatTbody.innerHTML = `<tr><td colspan="${showUnionCol ? 5 : 4}" class="border border-gray-300 p-3 text-center text-gray-500">কোনো তথ্য পাওয়া যায়নি</td></tr>`;
+            } else {
+                filteredMembers.forEach((m, idx) => {
+                    const mTrans = transactionsData.filter(t => t.memberId === m.id && t.type === 'income');
+                    let paidSum = 0;
+                    const months = [];
+                    mTrans.forEach(t => {
+                        paidSum += Number(t.amount || 0);
+                        if (t.forMonth && !months.includes(t.forMonth)) months.push(t.forMonth);
+                    });
+                    totalMemberEyanat += paidSum;
+
+                    let monthText = '';
+                    const dueMonthsCount = Math.max(0, 12 - months.length);
+                    if (months.length >= 12) {
+                        monthText = `<span class="font-bold text-green-700">১২ মাস পরিশোধিত</span> <span class="text-gray-600 text-[11px]">(${months.join(', ')})</span>`;
+                    } else if (months.length > 0) {
+                        monthText = `<span class="font-bold text-green-700">${convertToBanglaNumber(months.length)} মাস জমা</span> • <span class="text-red-600 font-bold">${convertToBanglaNumber(dueMonthsCount)} মাস বাকি</span><div class="text-[11px] text-gray-600 mt-0.5">${months.join(', ')}</div>`;
+                    } else if (paidSum > 0) {
+                        monthText = `<span class="text-blue-700 font-bold">মাস উল্লেখ নেই (${convertToBanglaNumber(mTrans.length)} বার জমা)</span>`;
+                    } else {
+                        monthText = `<span class="text-red-600 font-bold">১২ মাস বাকি / জমা নেই</span>`;
+                    }
+
+                    eyanatTbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-2 py-1.5 text-center">${convertToBanglaNumber(idx + 1)}</td>
+                        <td class="border border-gray-300 px-2 py-1.5">
+                            <div class="font-bold text-gray-800">${m.name}</div>
+                            <div class="text-[11px] text-gray-500">${m.designation}</div>
+                        </td>
+                        ${showUnionCol ? `<td class="border border-gray-300 px-2 py-1.5 text-gray-700">${m.union}</td>` : ''}
+                        <td class="border border-gray-300 px-2 py-1.5">${monthText}</td>
+                        <td class="border border-gray-300 px-2 py-1.5 text-right font-bold ${paidSum > 0 ? 'text-green-700' : 'text-gray-400'}">৳${convertToBanglaNumber(paidSum)}</td>
+                    </tr>`;
+                });
+            }
+            document.getElementById('rep-eyanat-total').innerText = '৳' + convertToBanglaNumber(totalMemberEyanat);
+
+            // 2. Build Expense Table
+            expenseList.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            const expTbody = document.getElementById('rep-expense-tbody');
+            expTbody.innerHTML = '';
+
+            if (expenseList.length === 0) {
+                expTbody.innerHTML = `<tr><td colspan="${showUnionCol ? 5 : 4}" class="border border-gray-300 p-3 text-center text-gray-500">কোনো ব্যয়ের তথ্য নেই</td></tr>`;
+            } else {
+                expenseList.forEach((t, idx) => {
+                    let dateStr = 'অজানা';
+                    if (t.createdAt) dateStr = new Date(t.createdAt.seconds * 1000).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' });
+                    expTbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-2 py-1.5 text-center">${convertToBanglaNumber(idx + 1)}</td>
+                        <td class="border border-gray-300 px-2 py-1.5 whitespace-nowrap">${dateStr}</td>
+                        <td class="border border-gray-300 px-2 py-1.5 font-medium text-gray-800">${t.category}</td>
+                        ${showUnionCol ? `<td class="border border-gray-300 px-2 py-1.5 text-gray-700">${t.union}</td>` : ''}
+                        <td class="border border-gray-300 px-2 py-1.5 text-right font-bold text-red-700">৳${convertToBanglaNumber(t.amount)}</td>
+                    </tr>`;
+                });
+            }
+            document.getElementById('rep-expense-table-total').innerText = '৳' + convertToBanglaNumber(totalExpense);
+
+            // 3. Build Other Income Table (if any)
+            const otherIncSec = document.getElementById('rep-other-income-section');
+            const otherIncTbody = document.getElementById('rep-other-income-tbody');
+            otherIncTbody.innerHTML = '';
+            if (otherIncomeList.length > 0) {
+                otherIncSec.classList.remove('hidden');
+                otherIncomeList.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                otherIncomeList.forEach((t, idx) => {
+                    let dateStr = 'অজানা';
+                    if (t.createdAt) dateStr = new Date(t.createdAt.seconds * 1000).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' });
+                    otherIncTbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-2 py-1.5 text-center">${convertToBanglaNumber(idx + 1)}</td>
+                        <td class="border border-gray-300 px-2 py-1.5 whitespace-nowrap">${dateStr}</td>
+                        <td class="border border-gray-300 px-2 py-1.5 font-medium text-gray-800">${t.category}</td>
+                        ${showUnionCol ? `<td class="border border-gray-300 px-2 py-1.5 text-gray-700">${t.union}</td>` : ''}
+                        <td class="border border-gray-300 px-2 py-1.5 text-right font-bold text-green-700">৳${convertToBanglaNumber(t.amount)}</td>
+                    </tr>`;
+                });
+            } else {
+                otherIncSec.classList.add('hidden');
+            }
+        }
+
+        window.printReport = function() {
+            window.print();
         }
 
         // --- COPY HELPER ---
@@ -859,6 +1253,7 @@
             const settingsBtn = document.getElementById('btn-settings');
             const accountsTab = document.getElementById('tab-accounts');
             const quickExportBtn = document.getElementById('btn-quick-export');
+            const filterUnionEl = document.getElementById('filter-union');
             
             if (isAdmin) {
                 document.getElementById('btn-admin-login').classList.add('hidden');
@@ -872,9 +1267,14 @@
                 if(currentAdminRole === 'master') {
                     roleText.innerHTML = '<i class="fas fa-crown text-yellow-600 mr-1"></i> মাস্টার অ্যাডমিন সক্রিয়';
                     settingsBtn.classList.remove('hidden');
+                    if (filterUnionEl) filterUnionEl.disabled = false;
                 } else {
                     roleText.innerHTML = `<i class="fas fa-check-circle mr-1"></i> অ্যাডমিন: ${currentAdminUnion}`;
                     settingsBtn.classList.add('hidden'); 
+                    if (filterUnionEl) {
+                        filterUnionEl.value = currentAdminUnion;
+                        filterUnionEl.disabled = true;
+                    }
                 }
             } else {
                 document.getElementById('btn-admin-login').classList.remove('hidden');
@@ -884,6 +1284,10 @@
                 banner.classList.add('hidden');
                 accountsTab.classList.add('hidden');
                 if (quickExportBtn) quickExportBtn.classList.add('hidden');
+                if (filterUnionEl) {
+                    filterUnionEl.disabled = false;
+                    filterUnionEl.value = 'all';
+                }
             }
             if (currentTab !== 'accounts') renderMembers();
         }
@@ -1041,7 +1445,7 @@
             let totalExpense = 0;
 
             let filteredTrans = transactionsData.filter(t => {
-                if (currentAdminRole === 'union') return t.union === currentAdminUnion;
+                if (currentAdminRole === 'union') return isSameUnion(t.union, currentAdminUnion);
                 return true;
             });
 
@@ -1067,7 +1471,7 @@
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center ${icon} shrink-0"><i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i></div>
                         <div>
-                            <h4 class="font-bold text-gray-800 text-sm leading-tight">${t.category}</h4>
+                            <h4 class="font-bold text-gray-800 text-sm leading-tight">${t.category} ${t.forMonth ? `<span class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded ml-1">${t.forMonth}</span>` : ''}</h4>
                             <p class="text-[11px] text-gray-500">${dateStr} • ${t.union}</p>
                             ${t.memberName ? `<p class="text-[11px] font-bold text-blue-600 mt-0.5"><i class="fas fa-user mr-1"></i>${t.memberName}</p>` : ''}
                         </div>
@@ -1095,6 +1499,15 @@
             document.getElementById('t-member-info').classList.add('hidden');
             document.getElementById('t-month-container').classList.add('hidden');
             
+            const unionContainer = document.getElementById('t-union-container');
+            const unionSelect = document.getElementById('t-union');
+            if (currentAdminRole === 'master') {
+                unionContainer.classList.remove('hidden');
+                unionSelect.value = 'বাকেরগঞ্জ উপজেলা শাখা';
+            } else {
+                unionContainer.classList.add('hidden');
+            }
+            
             document.getElementById('t-modal-title').innerText = 'নতুন আয়/ব্যয় যুক্ত করুন';
             document.getElementById('t-type').disabled = false;
             document.getElementById('t-category').value = '';
@@ -1111,6 +1524,7 @@
             document.getElementById('t-member-id').value = m.id;
             
             document.getElementById('t-member-info').classList.remove('hidden');
+            document.getElementById('t-union-container').classList.add('hidden');
             document.getElementById('t-member-name').innerText = m.name;
             document.getElementById('t-member-union').innerText = m.union;
             document.getElementById('t-month-container').classList.remove('hidden');
@@ -1130,7 +1544,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...'; btn.disabled = true;
 
             const memberId = document.getElementById('t-member-id').value;
-            let unionName = currentAdminRole === 'union' ? currentAdminUnion : 'উপজেলা শাখা';
+            let unionName = currentAdminRole === 'union' ? currentAdminUnion : (document.getElementById('t-union').value || 'বাকেরগঞ্জ উপজেলা শাখা');
             let memberName = '';
             
             if (memberId) {
