@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইসলামী যুব আন্দোলন বাংলাদেশ - বাকেরগঞ্জ উপজেলা</title>
+    
+    <meta name="theme-color" content="#0f5132" id="meta-theme-color">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/0f5132/ffffff?text=IJA">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#0f5132', secondary: '#198754', accent: '#ffc107', whatsapp: '#25D366' },
+                    fontFamily: { bengali: ['"Hind Siliguri"', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        .dynamic-bg { background-color: var(--color-primary, #0f5132); }
+        .dynamic-text { color: var(--color-primary, #0f5132); }
+        .islamic-pattern {
+            background-color: var(--color-primary, #0f5132);
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--color-primary, #0f5132); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #198754; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col h-screen overflow-hidden relative">
+
+    <!-- Loading Screen -->
+    <div id="initial-loader" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
+        <div class="loader"></div>
+        <p class="mt-4 text-gray-500 font-bengali font-bold">লোড হচ্ছে...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="islamic-pattern text-white shadow-md z-10 flex-shrink-0">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white p-1 rounded-full shadow-sm text-primary w-10 h-10 flex items-center justify-center font-bold overflow-hidden">
+                        IJA
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold leading-tight">ইসলামী যুব আন্দোলন</h1>
+                        <p class="text-xs sm:text-sm text-accent">বাকেরগঞ্জ উপজেলা শাখা</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="btn-admin-login" onclick="openModal('login-modal')" class="text-white hover:text-accent transition px-3 py-1.5 text-sm bg-white/20 rounded-lg border border-white/20 font-bold backdrop-blur-sm shadow-sm">
+                        <i class="fas fa-sign-in-alt mr-1"></i> <span class="hidden sm:inline">লগইন</span>
+                    </button>
+                    
+                    <div id="admin-controls" class="hidden flex items-center gap-2">
+                        <button id="btn-settings" onclick="openSettingsModal()" class="text-white hover:text-accent transition px-2 py-1.5 text-sm bg-white/20 rounded-lg border border-white/20 backdrop-blur-sm shadow-sm">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button onclick="handleLogout()" class="text-white hover:text-red-400 transition px-3 py-1.5 text-sm bg-white/20 rounded-lg border border-white/20 font-bold backdrop-blur-sm shadow-sm">
+                            <i class="fas fa-sign-out-alt mr-1"></i> <span class="hidden sm:inline">লগআউট</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto bg-gray-50 p-4 pb-24 relative">
+        <div class="container mx-auto max-w-4xl">
+            
+            <!-- Admin Banner -->
+            <div id="admin-banner" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-4 shadow-sm text-sm">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <strong class="font-bold" id="admin-role-text"><i class="fas fa-check-circle mr-1"></i> অ্যাডমিন সক্রিয়!</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex bg-white rounded-lg p-1 mb-4 shadow-sm border border-gray-200">
+                <button id="tab-leaders" onclick="switchTab('leaders')" class="flex-1 py-2.5 font-bold rounded-md transition shadow-sm dynamic-bg text-white text-sm sm:text-base">দায়িত্বশীল</button>
+                <button id="tab-members" onclick="switchTab('members')" class="flex-1 py-2.5 font-bold rounded-md text-gray-600 hover:bg-gray-100 transition text-sm sm:text-base">সদস্য</button>
+                <button id="tab-accounts" onclick="switchTab('accounts')" class="hidden flex-1 py-2.5 font-bold rounded-md text-gray-600 hover:bg-gray-100 transition text-sm sm:text-base"><i class="fas fa-wallet mr-1"></i> হিসাব-নিকাশ</button>
+            </div>
+
+            <!-- Search and Filter (Shared for Members & Leaders) -->
+            <div id="search-filter-section" class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100 sticky top-0 z-10">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-search"></i></span>
+                        <input type="text" id="search-input" onkeyup="renderMembers()" placeholder="নাম, পদবি বা মোবাইল নম্বর দিয়ে খুঁজুন..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                    </div>
+                    <select id="filter-union" onchange="renderMembers()" class="w-full sm:w-48 px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:border-primary focus:ring-1 focus:ring-primary"></select>
+                </div>
+                
+                <!-- Stats -->
+                <div class="mt-3 text-sm text-gray-500 flex justify-between items-center border-t border-gray-50 pt-2">
+                    <span>মোট <span id="stat-label">দায়িত্বশীল</span>: <strong id="total-count" class="text-primary font-bold text-lg">০</strong> জন</span>
+                    <button id="btn-quick-export" onclick="exportCurrentFilteredList()" class="hidden bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                        <i class="fas fa-copy"></i> তালিকা কপি
+                    </button>
+                </div>
+            </div>
+
+            <!-- Members Container -->
+            <div id="members-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            
+            <!-- Accounts Container -->
+            <div id="accounts-container" class="hidden flex-col gap-4">
+                <div class="grid grid-cols-3 gap-3 mb-2">
+                    <div class="bg-green-50 border border-green-200 p-4 rounded-xl text-center shadow-sm">
+                        <div class="w-8 h-8 mx-auto bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-2"><i class="fas fa-arrow-down"></i></div>
+                        <p class="text-xs font-bold text-green-800 mb-1">মোট আয়</p>
+                        <h3 class="font-bold text-green-700 text-lg sm:text-xl" id="acc-total-income">৳০</h3>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 p-4 rounded-xl text-center shadow-sm">
+                        <div class="w-8 h-8 mx-auto bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-2"><i class="fas fa-arrow-up"></i></div>
+                        <p class="text-xs font-bold text-red-800 mb-1">মোট ব্যয়</p>
+                        <h3 class="font-bold text-red-700 text-lg sm:text-xl" id="acc-total-expense">৳০</h3>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-center shadow-sm">
+                        <div class="w-8 h-8 mx-auto bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2"><i class="fas fa-wallet"></i></div>
+                        <p class="text-xs font-bold text-blue-800 mb-1">বর্তমান তহবিল</p>
+                        <h3 class="font-bold text-blue-700 text-lg sm:text-xl" id="acc-current-balance">৳০</h3>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-2 border-b pb-2">
+                    <h3 class="font-bold text-gray-800 text-lg">লেনদেনের খতিয়ান</h3>
+                    <button onclick="openTransactionModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm transition flex items-center gap-1">
+                        <i class="fas fa-plus"></i> আয়/ব্যয় যুক্ত করুন
+                    </button>
+                </div>
+
+                <div id="transactions-list" class="flex flex-col gap-3"></div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden flex-col items-center justify-center py-12 text-center">
+                <div class="bg-gray-100 p-6 rounded-full mb-4">
+                    <i class="fas fa-folder-open text-4xl text-gray-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-600 mb-2">কোনো তথ্য পাওয়া যায়নি</h3>
+            </div>
+        </div>
+    </main>
+
+    <!-- FAB Button -->
+    <button id="fab-add" onclick="openMemberModal()" class="hidden fixed bottom-6 right-6 dynamic-bg text-white rounded-full w-14 h-14 flex items-center justify-center shadow-xl z-20 hover:scale-105 transition transform">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0" id="login-modal-content">
+            <div class="dynamic-bg p-4 text-center text-white relative">
+                <button class="absolute top-4 right-4 text-white/70 hover:text-white" onclick="closeModal('login-modal')"><i class="fas fa-times text-xl"></i></button>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl mx-auto mb-2 backdrop-blur-sm"><i class="fas fa-user-shield"></i></div>
+                <h3 class="text-xl font-bold">অ্যাডমিন লগইন</h3>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">মোবাইল নাম্বার</label>
+                    <input type="tel" id="admin-phone-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="01XXXXXXXXX">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">গোপন পিন</label>
+                    <input type="password" id="admin-pin-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="PIN লিখুন">
+                </div>
+                <button onclick="handleLogin()" class="w-full dynamic-bg text-white font-bold py-2.5 rounded-lg shadow-md hover:opacity-90 transition">লগইন করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL (UPDATED WITH EXPORT BUTTON) -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[90vh] transition-all transform scale-95 opacity-0" id="settings-modal-content">
+            <div class="dynamic-bg p-4 text-white flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold"><i class="fas fa-cog mr-2"></i>মাস্টার সেটিংস</h3>
+                <button onclick="closeModal('settings-modal')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-gray-50">
+                
+                <!-- NEW: EXPORT DATA SECTION -->
+                <div class="mb-6 bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-gray-800 mb-2 border-b pb-2 flex items-center gap-2"><i class="fas fa-file-export text-green-600"></i> ডাটা এক্সপোর্ট</h4>
+                    <p class="text-xs text-gray-500 mb-3 font-bold">যেকোনো শাখা বা ইউনিয়নের দায়িত্বশীল ও সদস্যদের নাম ও নাম্বার আলাদাভাবে কপি করুন।</p>
+                    <select id="export-union-select" class="w-full px-3 py-2 mb-2.5 border border-gray-300 rounded-lg outline-none text-sm bg-white focus:border-green-500"></select>
+                    <select id="export-type-select" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg outline-none text-sm bg-white focus:border-green-500">
+                        <option value="leaders">শুধুমাত্র দায়িত্বশীল</option>
+                        <option value="members">শুধুমাত্র সদস্য</option>
+                        <option value="all">দায়িত্বশীল ও সদস্য (সবাই)</option>
+                    </select>
+                    <button onclick="exportSelectedBranchData()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-copy"></i> তালিকা দেখুন ও কপি করুন
+                    </button>
+                </div>
+
+                <div class="mb-6 bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2"><i class="fas fa-palette text-pink-500"></i> থিম কাস্টমাইজেশন</h4>
+                    <label class="block text-sm text-gray-600 mb-2">অ্যাপের মূল রঙ নির্বাচন করুন:</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="theme-color-picker" class="w-12 h-12 rounded cursor-pointer border-0 p-0" value="#0f5132">
+                        <div class="flex gap-2">
+                            <button type="button" class="w-8 h-8 rounded-full bg-[#0f5132] border-2 border-transparent hover:border-gray-400" onclick="document.getElementById('theme-color-picker').value='#0f5132'"></button>
+                            <button type="button" class="w-8 h-8 rounded-full bg-[#1e40af] border-2 border-transparent hover:border-gray-400" onclick="document.getElementById('theme-color-picker').value='#1e40af'"></button>
+                            <button type="button" class="w-8 h-8 rounded-full bg-[#991b1b] border-2 border-transparent hover:border-gray-400" onclick="document.getElementById('theme-color-picker').value='#991b1b'"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6 bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2"><i class="fas fa-user-plus text-blue-600"></i> নতুন ইউনিয়ন অ্যাডমিন তৈরি</h4>
+                    <input type="tel" id="new-admin-phone" placeholder="অ্যাডমিনের মোবাইল নাম্বার (01...)" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500">
+                    <input type="text" id="new-admin-pin" placeholder="তার জন্য একটি পিন দিন (যেমন: 1122)" class="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500">
+                    <select id="new-admin-union" class="w-full px-3 py-2 mb-4 border border-gray-300 rounded-lg outline-none text-sm bg-white focus:border-blue-500"></select>
+                    <button onclick="createUnionAdmin()" id="btn-create-admin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-sm transition shadow-sm">অ্যাডমিন যুক্ত করুন</button>
+                    
+                    <div class="mt-4 pt-3 border-t border-gray-100">
+                        <strong class="text-xs text-gray-500 block mb-2">বর্তমান ইউনিয়ন অ্যাডমিনরা:</strong>
+                        <div id="admin-list-display" class="text-xs text-gray-700 space-y-1 bg-gray-50 p-2 rounded border"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-gray-800 mb-2 border-b pb-2">পদবি সিরিয়াল কাস্টমাইজেশন</h4>
+                    <textarea id="designations-textarea" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm bg-gray-50 focus:border-primary"></textarea>
+                </div>
+            </div>
+            <div class="p-4 border-t bg-white flex justify-end gap-3 shrink-0">
+                <button onclick="closeModal('settings-modal')" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition">বাতিল</button>
+                <button onclick="saveAppSettings()" id="btn-save-settings" class="px-6 py-2 dynamic-bg text-white font-bold rounded-lg shadow-md hover:opacity-90 transition">সেভ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD/EDIT MEMBER MODAL -->
+    <div id="member-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[90vh] transition-all transform scale-95 opacity-0" id="member-modal-content">
+            <div class="dynamic-bg p-4 text-white flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold" id="modal-title">তথ্য যুক্ত করুন</h3>
+                <button onclick="closeModal('member-modal')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-gray-50">
+                <form id="member-form" onsubmit="handleMemberSubmit(event)">
+                    <input type="hidden" id="m-id">
+                    
+                    <div class="mb-5 flex flex-col items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <div class="relative w-24 h-24 mb-2">
+                            <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300 overflow-hidden">
+                                <i class="fas fa-camera text-3xl text-gray-400" id="photo-placeholder-icon"></i>
+                                <img id="m-photo-preview" src="" class="hidden w-full h-full object-cover">
+                            </div>
+                            <label for="m-photo" class="absolute bottom-0 right-0 dynamic-bg text-white w-8 h-8 rounded-full flex items-center justify-center cursor-pointer shadow-md hover:scale-110 transition transform border-2 border-white" title="ছবি পরিবর্তন করুন">
+                                <i class="fas fa-camera text-sm"></i>
+                            </label>
+                            <button type="button" id="btn-remove-photo" onclick="removePhoto()" class="hidden absolute top-0 right-0 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition border-2 border-white" title="ছবি মুছুন">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                            <input type="file" id="m-photo" accept="image/*" class="hidden" onchange="previewImage(event)">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">পূর্ণ নাম <span class="text-red-500">*</span></label>
+                            <input type="text" id="m-name" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">পদবি <span class="text-red-500">*</span></label>
+                            <select id="m-designation" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white"></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">শাখা/ইউনিয়ন <span class="text-red-500">*</span></label>
+                            <select id="m-union" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white"></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">মোবাইল নম্বর <span class="text-red-500">*</span></label>
+                            <input type="tel" id="m-phone" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white" placeholder="01XXXXXXXXX">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3 pt-6 mt-2">
+                        <button type="button" onclick="closeModal('member-modal')" class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition">বাতিল</button>
+                        <button type="submit" id="btn-save-member" class="px-6 py-2.5 dynamic-bg text-white font-bold rounded-lg shadow-md hover:opacity-90 transition">সংরক্ষণ করুন</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW PROFILE (REVIEW) MODAL -->
+    <div id="profile-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0 relative" id="profile-modal-content">
+            <div class="h-32 dynamic-bg w-full relative">
+                <button onclick="closeModal('profile-modal')" class="absolute top-4 right-4 text-white/80 hover:text-white bg-black/20 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition"><i class="fas fa-times"></i></button>
+                <button id="btn-edit-from-profile" class="hidden absolute top-4 left-4 text-white/80 hover:text-white bg-black/20 px-3 py-1.5 rounded-full flex items-center gap-2 backdrop-blur-sm transition text-sm font-bold shadow-sm"><i class="fas fa-edit"></i> এডিট</button>
+            </div>
+            
+            <div class="px-6 pb-6 text-center relative -mt-16">
+                <div class="w-32 h-32 mx-auto rounded-full border-4 border-white shadow-lg overflow-hidden bg-white mb-4">
+                    <img id="v-photo" src="" class="w-full h-full object-cover">
+                    <div id="v-initial" class="hidden w-full h-full bg-gray-100 flex items-center justify-center text-4xl font-bold dynamic-text"></div>
+                </div>
+                
+                <h2 id="v-name" class="text-2xl font-bold text-gray-800 leading-tight mb-1">নাম</h2>
+                <p id="v-designation" class="text-primary font-bold text-lg mb-2">পদবি</p>
+                <div class="flex flex-col items-center justify-center gap-2 mb-4">
+                    <div class="inline-flex items-center justify-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-gray-600 text-sm font-medium">
+                        <i class="fas fa-map-marker-alt text-red-500"></i> <span id="v-union">ইউনিয়ন</span>
+                    </div>
+                    <div class="inline-flex items-center justify-center gap-1 bg-blue-50 px-3 py-1 rounded-full text-blue-700 text-sm font-medium cursor-pointer shadow-sm border border-blue-100 transition hover:bg-blue-100" onclick="copyPhone()" title="নাম্বার কপি করুন">
+                        <i class="fas fa-phone-alt"></i> <span id="v-phone">01XXXXXXXXX</span> <i class="far fa-copy ml-1 opacity-70"></i>
+                    </div>
+                </div>
+
+                <div id="v-admin-dues-info" class="hidden bg-gray-50 border border-green-200 rounded-xl p-3 mb-4 text-left shadow-sm">
+                    <div class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2">
+                        <p class="text-sm text-gray-700 font-bold"><i class="fas fa-receipt text-green-600 mr-1"></i>মোট জমা:</p>
+                        <h3 class="text-lg font-bold text-green-700" id="v-total-dues">৳০</h3>
+                    </div>
+                    <p class="text-[11px] text-gray-500 mb-1.5 font-bold">ইয়ানত আদায়ের অবস্থা (চলতি বছর):</p>
+                    <div id="v-months-grid" class="grid grid-cols-4 gap-1.5 text-[10px] text-center font-bold mb-3"></div>
+                    <p class="text-[11px] text-gray-500 mb-1 font-bold">বিস্তারিত লেনদেন:</p>
+                    <div id="v-member-transactions-list" class="max-h-28 overflow-y-auto space-y-1.5 pr-1"></div>
+                </div>
+                
+                <div class="flex gap-3 mb-4">
+                    <a id="v-call-btn" href="#" class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2.5 rounded-xl font-bold shadow-sm border border-blue-200 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-phone-alt"></i> কল
+                    </a>
+                    <a id="v-wa-btn" href="#" target="_blank" class="flex-1 bg-green-50 hover:bg-green-100 text-whatsapp py-2.5 rounded-xl font-bold shadow-sm border border-green-200 transition flex items-center justify-center gap-2">
+                        <i class="fab fa-whatsapp text-lg"></i> মেসেজ
+                    </a>
+                </div>
+
+                <button id="btn-collect-dues-profile" class="hidden w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2 mb-2">
+                    <i class="fas fa-hand-holding-usd text-lg"></i> ইয়ানত/টাকা জমা নিন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSACTION MODAL -->
+    <div id="transaction-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0" id="transaction-modal-content">
+            <div class="dynamic-bg p-4 text-white flex justify-between items-center">
+                <h3 class="text-lg font-bold" id="t-modal-title">আয়/ব্যয় যুক্ত করুন</h3>
+                <button onclick="closeModal('transaction-modal')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 bg-gray-50">
+                <form id="transaction-form" onsubmit="handleTransactionSubmit(event)">
+                    <input type="hidden" id="t-member-id">
+                    
+                    <div id="t-member-info" class="hidden mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 text-center">
+                        <p class="text-xs text-blue-600 font-bold mb-1">যাঁর কাছ থেকে জমা নেওয়া হচ্ছে:</p>
+                        <h4 class="font-bold text-gray-800" id="t-member-name">নাম</h4>
+                        <span class="text-xs bg-white px-2 py-0.5 rounded border border-gray-200 mt-1 inline-block" id="t-member-union">ইউনিয়ন</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">ধরণ <span class="text-red-500">*</span></label>
+                        <select id="t-type" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white">
+                            <option value="income">আয় / জমা (+)</option>
+                            <option value="expense">ব্যয় / খরচ (-)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">খাতের নাম / বিবরণ <span class="text-red-500">*</span></label>
+                        <input type="text" id="t-category" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white" placeholder="যেমন: মাসিক ইয়ানত, ব্যানার খরচ">
+                    </div>
+
+                    <div class="mb-4 hidden" id="t-month-container">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">কোন মাসের ইয়ানত? <span class="text-gray-400 text-xs">(ঐচ্ছিক)</span></label>
+                        <select id="t-month" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white text-sm">
+                            <option value="">মাস নির্বাচন করুন</option>
+                            <option value="জানুয়ারি">জানুয়ারি</option>
+                            <option value="ফেব্রুয়ারি">ফেব্রুয়ারি</option>
+                            <option value="মার্চ">মার্চ</option>
+                            <option value="এপ্রিল">এপ্রিল</option>
+                            <option value="মে">মে</option>
+                            <option value="জুন">জুন</option>
+                            <option value="জুলাই">জুলাই</option>
+                            <option value="আগস্ট">আগস্ট</option>
+                            <option value="সেপ্টেম্বর">সেপ্টেম্বর</option>
+                            <option value="অক্টোবর">অক্টোবর</option>
+                            <option value="নভেম্বর">নভেম্বর</option>
+                            <option value="ডিসেম্বর">ডিসেম্বর</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">টাকার পরিমাণ <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-gray-500">৳</span>
+                            <input type="number" id="t-amount" required min="1" class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary bg-white font-bold text-lg" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 mt-2">
+                        <button type="button" onclick="closeModal('transaction-modal')" class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition">বাতিল</button>
+                        <button type="submit" id="btn-save-transaction" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-md transition">সেভ করুন</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black/50 z-[70] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 opacity-0 transition-all" id="confirm-modal-content">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">আপনি কি নিশ্চিত?</h3>
+            <p class="text-gray-500 text-sm mb-6">এই তথ্যটি মুছে ফেলা হবে।</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="closeModal('confirm-modal')" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition">বাতিল</button>
+                <button id="btn-confirm-yes" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-md transition">হ্যাঁ, মুছুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPORT RESULT MODAL (NEW) -->
+    <div id="export-modal" class="fixed inset-0 bg-black/50 z-[75] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0 flex flex-col max-h-[85vh]" id="export-modal-content">
+            <div class="dynamic-bg p-4 text-white flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold"><i class="fas fa-file-alt mr-2"></i>দায়িত্বশীল তালিকা</h3>
+                <button onclick="closeModal('export-modal')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-4 flex-1 overflow-hidden flex flex-col">
+                <p class="text-sm text-gray-700 font-bold mb-2 bg-yellow-50 p-2 rounded border border-yellow-200">
+                    <i class="fas fa-info-circle text-yellow-600"></i> নিচের বক্সের লেখাগুলোর উপর চেপে ধরে (Long press) "Copy" বাটন দিয়ে ম্যানুয়ালি কপি করে নিন:
+                </p>
+                <textarea id="export-textarea" readonly class="w-full flex-1 p-3 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:outline-none min-h-[250px] resize-none"></textarea>
+            </div>
+            <div class="p-4 border-t bg-white shrink-0">
+                <button onclick="manualCopyExportText()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow-md transition flex items-center justify-center gap-2">
+                    <i class="fas fa-copy"></i> অটোমেটিক কপি করার চেষ্টা করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[80] flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAx5CAqZZIIzXLmP8TvzSwlOApYq4PE4wI",
+            authDomain: "ijab-bakerganj.firebaseapp.com",
+            projectId: "ijab-bakerganj",
+            storageBucket: "ijab-bakerganj.firebasestorage.app",
+            messagingSenderId: "893273342378",
+            appId: "1:893273342378:web:91d803ada0fc7649cdebd3"
+        };
+
+        let db, auth;
+        let membersData = [];
+        let transactionsData = []; 
+        let unionAdminsList = {}; 
+        
+        let isAdmin = false;
+        let currentAdminRole = null; 
+        let currentAdminUnion = null; 
+        
+        let currentTab = 'leaders';
+        const UNIONS = ["বাকেরগঞ্জ উপজেলা শাখা", "নলুয়া", "কলসকাঠি", "গারুরিয়া", "ভরপাশা", "রঙ্গশ্রী", "পাদ্রীশিবপুর", "নিয়ামতি", "পৌরসভা", "বোয়ালিয়া সাংগঠনিক"];
+        let APP_DESIGNATIONS = ["সভাপতি", "সহ-সভাপতি", "সাধারণ সম্পাদক", "সদস্য"];
+        
+        const MASTER_PHONE = "01787265892";
+        const MASTER_PIN = "12345";
+        let currentPhotoUrl = '';
+
+        window.initUI = function() {
+            const filterUnion = document.getElementById('filter-union');
+            const formUnion = document.getElementById('m-union');
+            const newAdminUnion = document.getElementById('new-admin-union');
+            const exportUnion = document.getElementById('export-union-select');
+            
+            filterUnion.innerHTML = '<option value="all">সব শাখা/ইউনিয়ন</option>';
+            formUnion.innerHTML = '<option value="">নির্বাচন করুন</option>';
+            if(newAdminUnion) newAdminUnion.innerHTML = '<option value="">ইউনিয়ন নির্বাচন করুন</option>';
+            if(exportUnion) exportUnion.innerHTML = '<option value="all">সব শাখা/ইউনিয়ন</option>';
+
+            UNIONS.forEach(u => {
+                filterUnion.add(new Option(u, u));
+                formUnion.add(new Option(u, u));
+                if(newAdminUnion) newAdminUnion.add(new Option(u, u));
+                if(exportUnion) exportUnion.add(new Option(u, u));
+            });
+            populateDesignationDropdown();
+        }
+
+        window.switchTab = function(tab) {
+            currentTab = tab;
+            document.getElementById('tab-leaders').className = tab === 'leaders' ? "flex-1 py-2.5 font-bold rounded-md transition shadow-sm dynamic-bg text-white text-sm sm:text-base" : "flex-1 py-2.5 font-bold rounded-md text-gray-600 hover:bg-gray-100 transition text-sm sm:text-base";
+            document.getElementById('tab-members').className = tab === 'members' ? "flex-1 py-2.5 font-bold rounded-md transition shadow-sm dynamic-bg text-white text-sm sm:text-base" : "flex-1 py-2.5 font-bold rounded-md text-gray-600 hover:bg-gray-100 transition text-sm sm:text-base";
+            document.getElementById('tab-accounts').className = tab === 'accounts' ? "flex-1 py-2.5 font-bold rounded-md transition shadow-sm dynamic-bg text-white text-sm sm:text-base flex justify-center items-center" : "flex-1 py-2.5 font-bold rounded-md text-gray-600 hover:bg-gray-100 transition text-sm sm:text-base flex justify-center items-center";
+            
+            if (tab === 'accounts') {
+                document.getElementById('members-container').style.display = 'none';
+                document.getElementById('search-filter-section').style.display = 'none';
+                document.getElementById('accounts-container').style.display = 'flex';
+                document.getElementById('empty-state').classList.replace('flex', 'hidden');
+                renderTransactions();
+            } else {
+                document.getElementById('accounts-container').style.display = 'none';
+                document.getElementById('search-filter-section').style.display = 'block';
+                document.getElementById('members-container').style.display = 'grid';
+                document.getElementById('stat-label').innerText = tab === 'leaders' ? 'দায়িত্বশীল' : 'সদস্য';
+                renderMembers();
+            }
+        };
+
+        function convertToBanglaNumber(number) {
+            const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+            return number.toString().replace(/[0-9]/g, w => banglaDigits[w]);
+        }
+
+        function populateDesignationDropdown() {
+            const sel = document.getElementById('m-designation');
+            if(sel) {
+                sel.innerHTML = '<option value="">পদবি নির্বাচন করুন</option>';
+                APP_DESIGNATIONS.forEach(d => { if(d) sel.add(new Option(d, d)); });
+            }
+        }
+
+        window.openSettingsModal = function() {
+            document.getElementById('designations-textarea').value = APP_DESIGNATIONS.join('\n');
+            const currentColor = document.documentElement.style.getPropertyValue('--color-primary') || '#0f5132';
+            document.getElementById('theme-color-picker').value = currentColor.trim();
+        // --- HELPER: GENERATE EXPORT MODAL CONTENT ---
+        function showExportModalWithList(list, headerTitle, showUnionPerItem) {
+            if (list.length === 0) {
+                showToast('এই শাখায় কোনো তথ্য পাওয়া যায়নি!', 'error');
+                return;
+            }
+
+            // পদবি অনুযায়ী সাজানো
+            list.sort((a, b) => {
+                let rA = APP_DESIGNATIONS.indexOf(a.designation);
+                let rB = APP_DESIGNATIONS.indexOf(b.designation);
+                rA = rA > -1 ? rA : 999; rB = rB > -1 ? rB : 999;
+                return rA - rB;
+            });
+
+            let text = `ইসলামী যুব আন্দোলন বাংলাদেশ\n${headerTitle}:\n\n`;
+            list.forEach((m, index) => {
+                text += `${convertToBanglaNumber(index + 1)}. ${m.name}\n`;
+                text += `   পদবি: ${m.designation}\n`;
+                if (showUnionPerItem) text += `   শাখা: ${m.union}\n`;
+                text += `   মোবাইল: ${m.phone}\n\n`;
+            });
+
+            document.getElementById('export-textarea').value = text;
+            openModal('export-modal');
+        }
+
+        // --- EXPORT FROM MASTER SETTINGS (ANY BRANCH/TYPE) ---
+        window.exportSelectedBranchData = function() {
+            const selectedUnion = document.getElementById('export-union-select').value;
+            const selectedType = document.getElementById('export-type-select').value;
+
+            const filteredList = membersData.filter(m => {
+                const matchUnion = (selectedUnion === 'all') ? true : m.union === selectedUnion;
+                let matchType = true;
+                if (selectedType === 'leaders') matchType = m.designation !== 'সদস্য';
+                else if (selectedType === 'members') matchType = m.designation === 'সদস্য';
+                return matchUnion && matchType;
+            });
+
+            const typeLabel = selectedType === 'leaders' ? 'দায়িত্বশীল তালিকা' : (selectedType === 'members' ? 'সদস্য তালিকা' : 'দায়িত্বশীল ও সদস্য তালিকা');
+            const unionLabel = selectedUnion === 'all' ? 'সকল শাখা/ইউনিয়ন' : selectedUnion;
+
+            closeModal('settings-modal');
+            setTimeout(() => {
+                showExportModalWithList(filteredList, `${unionLabel} - ${typeLabel}`, selectedUnion === 'all');
+            }, 300);
+        }
+
+        // --- QUICK EXPORT FROM MAIN SCREEN FILTER ---
+        window.exportCurrentFilteredList = function() {
+            const unionFilter = document.getElementById('filter-union').value;
+            const search = document.getElementById('search-input').value.toLowerCase();
+
+            const filteredList = membersData.filter(m => {
+                const matchU = (unionFilter === 'all') ? true : m.union === unionFilter;
+                const matchS = (m.name||'').toLowerCase().includes(search) || (m.phone||'').includes(search) || (m.designation||'').toLowerCase().includes(search);
+                const matchT = currentTab === 'members' ? m.designation === 'সদস্য' : m.designation !== 'সদস্য';
+                const matchAccess = (currentAdminRole === 'union') ? m.union === currentAdminUnion : true;
+                return matchU && matchS && matchT && matchAccess;
+            });
+
+            const typeLabel = currentTab === 'members' ? 'সদস্য তালিকা' : 'দায়িত্বশীল তালিকা';
+            const unionLabel = currentAdminRole === 'union' ? currentAdminUnion : (unionFilter === 'all' ? 'সকল শাখা/ইউনিয়ন' : unionFilter);
+            const showUnionPerItem = (currentAdminRole !== 'union' && unionFilter === 'all');
+
+            showExportModalWithList(filteredList, `${unionLabel} - ${typeLabel}`, showUnionPerItem);
+        }
+
+        window.createUnionAdmin = async function() {
+            const phone = document.getElementById('new-admin-phone').value.trim();
+            const pin = document.getElementById('new-admin-pin').value.trim();
+            const union = document.getElementById('new-admin-union').value;
+
+            if(!phone || !pin || !union) return showToast('সব তথ্য পূরণ করুন!', 'error');
+            const btn = document.getElementById('btn-create-admin');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> হচ্ছে...'; btn.disabled = true;
+
+            unionAdminsList[phone] = { pin: pin, union: union };
+            try {
+                await setDoc(doc(db, 'settings', 'admins'), { data: JSON.stringify(unionAdminsList) }, {merge: true});
+                document.getElementById('new-admin-phone').value = '';
+                document.getElementById('new-admin-pin').value = '';
+                showToast(`${union} এর জন্য অ্যাডমিন তৈরি হয়েছে!`);
+                updateAdminListDisplay();
+            } catch(e) { showToast('সমস্যা হয়েছে!', 'error'); }
+            btn.innerHTML = 'অ্যাডমিন যুক্ত করুন'; btn.disabled = false;
+        }
+
+        function updateAdminListDisplay() {
+            const div = document.getElementById('admin-list-display');
+            div.innerHTML = '';
+            let hasAdmin = false;
+            for (const [phone, data] of Object.entries(unionAdminsList)) {
+                div.innerHTML += `<div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
+                    <span><i class="fas fa-user-shield text-gray-400 mr-1"></i> ${phone}</span>
+                    <span class="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold">${data.union}</span>
+                </div>`;
+                hasAdmin = true;
+            }
+            if(!hasAdmin) div.innerHTML = '<span class="text-gray-400 italic">কোনো অ্যাডমিন নেই</span>';
+        }
+
+        window.saveAppSettings = async function() {
+            const text = document.getElementById('designations-textarea').value;
+            let newDes = text.split('\n').map(i => i.trim()).filter(i => i);
+            if (!newDes.includes('সদস্য')) newDes.push('সদস্য');
+            const newColor = document.getElementById('theme-color-picker').value;
+            
+            const btn = document.getElementById('btn-save-settings');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...'; btn.disabled = true;
+
+            try {
+                await setDoc(doc(db, 'settings', 'main'), { designations: newDes, themeColor: newColor }, {merge: true});
+                closeModal('settings-modal');
+                showToast('সেটিংস সেভ হয়েছে!');
+            } catch(e) { showToast('সমস্যা হয়েছে!', 'error'); }
+            btn.innerHTML = 'সেভ করুন'; btn.disabled = false;
+        }
+
+        async function initializeAppSystem() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInAnonymously(auth);
+                
+                if (localStorage.getItem('ija_admin_mode') === 'true') {
+                    isAdmin = true;
+                    currentAdminRole = localStorage.getItem('ija_admin_role');
+                    currentAdminUnion = localStorage.getItem('ija_admin_union');
+                    updateAdminUI();
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        onSnapshot(doc(db, 'settings', 'main'), (docSnap) => {
+                            if (docSnap.exists()) {
+                                const data = docSnap.data();
+                                if (data.designations) { APP_DESIGNATIONS = data.designations; populateDesignationDropdown(); }
+                                if (data.themeColor) {
+                                    document.documentElement.style.setProperty('--color-primary', data.themeColor);
+                                    document.getElementById('meta-theme-color').setAttribute('content', data.themeColor);
+                                }
+                                if (currentTab !== 'accounts') renderMembers();
+                            }
+                        });
+                        onSnapshot(doc(db, 'settings', 'admins'), (docSnap) => {
+                            if (docSnap.exists() && docSnap.data().data) unionAdminsList = JSON.parse(docSnap.data().data);
+                        });
+                        onSnapshot(collection(db, 'members'), (snapshot) => {
+                            membersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            document.getElementById('initial-loader').style.display = 'none';
+                            if (currentTab !== 'accounts') renderMembers();
+                        });
+                        onSnapshot(collection(db, 'transactions'), (snapshot) => {
+                            transactionsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            if (currentTab === 'accounts') renderTransactions();
+                        });
+                    }
+                });
+            } catch(e) { document.getElementById('initial-loader').innerHTML = '<p class="text-red-500 font-bold">ইন্টারনেট সংযোগ নেই!</p>'; }
+        }
+
+        window.handleLogin = function() {
+            const phone = document.getElementById('admin-phone-input').value.trim();
+            const pin = document.getElementById('admin-pin-input').value.trim();
+
+            if(phone === MASTER_PHONE && pin === MASTER_PIN) {
+                isAdmin = true; currentAdminRole = 'master'; currentAdminUnion = 'all';
+                localStorage.setItem('ija_admin_mode', 'true');
+                localStorage.setItem('ija_admin_role', 'master');
+                showToast('মাস্টার অ্যাডমিন লগইন সফল!');
+                closeModal('login-modal');
+                updateAdminUI();
+            } 
+            else if (unionAdminsList[phone] && unionAdminsList[phone].pin === pin) {
+                isAdmin = true; currentAdminRole = 'union'; currentAdminUnion = unionAdminsList[phone].union;
+                localStorage.setItem('ija_admin_mode', 'true');
+                localStorage.setItem('ija_admin_role', 'union');
+                localStorage.setItem('ija_admin_union', currentAdminUnion);
+                showToast(`${currentAdminUnion} অ্যাডমিন লগইন সফল!`);
+                closeModal('login-modal');
+                updateAdminUI();
+            } else { showToast('ভুল নাম্বার অথবা পিন!', 'error'); }
+        }
+
+        window.handleLogout = function() {
+            isAdmin = false; currentAdminRole = null; currentAdminUnion = null;
+            localStorage.clear();
+            showToast('লগআউট সম্পন্ন হয়েছে।');
+            if (currentTab === 'accounts') switchTab('leaders');
+            updateAdminUI();
+        }
+
+        function updateAdminUI() {
+            const banner = document.getElementById('admin-banner');
+            const roleText = document.getElementById('admin-role-text');
+            const settingsBtn = document.getElementById('btn-settings');
+            const accountsTab = document.getElementById('tab-accounts');
+            const quickExportBtn = document.getElementById('btn-quick-export');
+            
+            if (isAdmin) {
+                document.getElementById('btn-admin-login').classList.add('hidden');
+                document.getElementById('admin-controls').classList.remove('hidden');
+                document.getElementById('admin-controls').classList.add('flex');
+                document.getElementById('fab-add').classList.remove('hidden');
+                banner.classList.remove('hidden');
+                accountsTab.classList.remove('hidden');
+                if (quickExportBtn) quickExportBtn.classList.remove('hidden');
+                
+                if(currentAdminRole === 'master') {
+                    roleText.innerHTML = '<i class="fas fa-crown text-yellow-600 mr-1"></i> মাস্টার অ্যাডমিন সক্রিয়';
+                    settingsBtn.classList.remove('hidden');
+                } else {
+                    roleText.innerHTML = `<i class="fas fa-check-circle mr-1"></i> অ্যাডমিন: ${currentAdminUnion}`;
+                    settingsBtn.classList.add('hidden'); 
+                }
+            } else {
+                document.getElementById('btn-admin-login').classList.remove('hidden');
+                document.getElementById('admin-controls').classList.add('hidden');
+                document.getElementById('admin-controls').classList.remove('flex');
+                document.getElementById('fab-add').classList.add('hidden');
+                banner.classList.add('hidden');
+                accountsTab.classList.add('hidden');
+                if (quickExportBtn) quickExportBtn.classList.add('hidden');
+            }
+            if (currentTab !== 'accounts') renderMembers();
+        }
+
+        window.renderMembers = function() {
+            const container = document.getElementById('members-container');
+            const emptyState = document.getElementById('empty-state');
+            const unionFilter = document.getElementById('filter-union').value;
+            const search = document.getElementById('search-input').value.toLowerCase();
+            
+            container.innerHTML = '';
+            
+            let filtered = membersData.filter(m => {
+                const matchU = (unionFilter === 'all') ? true : m.union === unionFilter;
+                const matchS = (m.name||'').toLowerCase().includes(search) || (m.phone||'').includes(search) || (m.designation||'').toLowerCase().includes(search);
+                const matchT = currentTab === 'members' ? m.designation === 'সদস্য' : m.designation !== 'সদস্য';
+                const matchAccess = (currentAdminRole === 'union') ? m.union === currentAdminUnion : true;
+                return matchU && matchS && matchT && matchAccess;
+            });
+
+            filtered.sort((a, b) => {
+                let rA = APP_DESIGNATIONS.indexOf(a.designation);
+                let rB = APP_DESIGNATIONS.indexOf(b.designation);
+                rA = rA > -1 ? rA : 999; rB = rB > -1 ? rB : 999;
+                return rA - rB;
+            });
+
+            document.getElementById('total-count').innerText = convertToBanglaNumber(filtered.length);
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden'); emptyState.classList.remove('flex');
+                filtered.forEach(m => {
+                    const html = `
+                    <div onclick="viewProfile('${m.id}')" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition relative group cursor-pointer">
+                        ${isAdmin ? `
+                        <div class="absolute top-3 right-3 flex gap-1 z-10 opacity-100 sm:opacity-0 group-hover:opacity-100 transition" onclick="event.stopPropagation()">
+                            <button onclick="editMember('${m.id}')" class="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-100 shadow-sm border border-blue-100"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteMemberInit('${m.id}')" class="w-8 h-8 bg-red-50 text-red-600 rounded-full flex items-center justify-center hover:bg-red-100 shadow-sm border border-red-100"><i class="fas fa-trash"></i></button>
+                        </div>` : ''}
+                        
+                        <div class="flex items-start gap-4">
+                            ${m.photoUrl ? `<img src="${m.photoUrl}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-100 shadow-sm shrink-0">` : `<div class="w-14 h-14 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center font-bold text-2xl text-gray-500 shrink-0">${(m.name||'?').charAt(0)}</div>`}
+                            <div class="flex-1 min-w-0 pr-8">
+                                <h3 class="font-bold text-gray-800 text-lg truncate">${m.name}</h3>
+                                <p class="text-sm dynamic-text font-bold truncate">${m.designation}</p>
+                                <span class="text-[11px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded mt-1 inline-block"><i class="fas fa-map-marker-alt text-red-400 mr-1"></i>${m.union}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                    container.innerHTML += html;
+                });
+            }
+        }
+
+        window.viewProfile = function(id) {
+            const m = membersData.find(x => x.id === id);
+            if(!m) return;
+            
+            const photoEl = document.getElementById('v-photo');
+            const initEl = document.getElementById('v-initial');
+            
+            if(m.photoUrl) {
+                photoEl.src = m.photoUrl; photoEl.classList.remove('hidden'); initEl.classList.add('hidden');
+            } else {
+                photoEl.classList.add('hidden'); initEl.innerText = (m.name||'?').charAt(0); initEl.classList.remove('hidden');
+            }
+            
+            document.getElementById('v-name').innerText = m.name;
+            document.getElementById('v-designation').innerText = m.designation;
+            document.getElementById('v-union').innerText = m.union;
+            if(document.getElementById('v-phone')) document.getElementById('v-phone').innerText = m.phone;
+            
+            let totalPaid = 0;
+            let memberTransHtml = '';
+            let paidMonths = [];
+            
+            let memberTrans = transactionsData.filter(t => t.memberId === id);
+            memberTrans.sort((a, b) => b.createdAt - a.createdAt);
+
+            memberTrans.forEach(t => {
+                if (t.type === 'income') {
+                    totalPaid += Number(t.amount);
+                    if (t.forMonth) paidMonths.push(t.forMonth);
+                }
+                
+                let dateStr = 'অজানা';
+                if(t.createdAt) dateStr = new Date(t.createdAt.seconds * 1000).toLocaleDateString('bn-BD', {day:'numeric', month:'short'});
+                let sign = t.type === 'income' ? '+' : '-';
+                let color = t.type === 'income' ? 'text-green-600' : 'text-red-600';
+                
+                memberTransHtml += `<div class="flex justify-between items-center bg-white p-2 rounded-lg border border-gray-200 text-xs shadow-sm">
+                    <div>
+                        <div class="font-bold text-gray-700 flex items-center gap-1">
+                            ${t.category} 
+                            ${t.forMonth ? `<span class="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-[9px] ml-1 border border-green-200">${t.forMonth}</span>` : ''}
+                        </div>
+                        <div class="text-[10px] text-gray-400 mt-0.5"><i class="far fa-calendar-alt mr-1"></i>${dateStr}</div>
+                    </div>
+                    <div class="font-bold text-sm ${color}">${sign}৳${convertToBanglaNumber(t.amount)}</div>
+                </div>`;
+            });
+            
+            if(memberTransHtml === '') memberTransHtml = '<div class="text-center text-gray-400 text-xs py-3 border border-dashed border-gray-300 rounded-lg">কোনো লেনদেনের তথ্য নেই</div>';
+
+            const allMonthsFull = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+            const allMonthsShort = ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রি', 'মে', 'জুন', 'জুলা', 'আগ', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে'];
+            let gridHtml = '';
+            
+            allMonthsFull.forEach((m, idx) => {
+                let isPaid = paidMonths.includes(m);
+                let bgClass = isPaid ? 'bg-green-500 text-white border-green-600 shadow-sm' : 'bg-gray-100 text-gray-400 border-gray-200 opacity-60';
+                let iconHtml = isPaid ? '<i class="fas fa-check-circle text-[8px] absolute -top-1 -right-1 text-white bg-green-600 rounded-full border border-white"></i>' : '';
+                gridHtml += `<div class="py-1.5 rounded-md border ${bgClass} relative flex items-center justify-center">${allMonthsShort[idx]} ${iconHtml}</div>`;
+            });
+            
+            if(document.getElementById('v-months-grid')) document.getElementById('v-months-grid').innerHTML = gridHtml;
+            if(document.getElementById('v-member-transactions-list')) document.getElementById('v-member-transactions-list').innerHTML = memberTransHtml;
+            
+            document.getElementById('v-call-btn').href = `tel:${m.phone}`;
+            document.getElementById('v-wa-btn').href = `https://wa.me/+88${m.phone}`;
+            
+            const editBtn = document.getElementById('btn-edit-from-profile');
+            const duesBtn = document.getElementById('btn-collect-dues-profile');
+            const duesInfo = document.getElementById('v-admin-dues-info');
+            
+            if (isAdmin) {
+                editBtn.classList.remove('hidden');
+                editBtn.onclick = () => { closeModal('profile-modal'); setTimeout(() => editMember(id), 300); };
+                
+                duesBtn.classList.remove('hidden');
+                duesBtn.onclick = () => {
+                    closeModal('profile-modal');
+                    setTimeout(() => openTransactionModalForMember(id), 300);
+                };
+                
+                if (duesInfo) {
+                    duesInfo.classList.remove('hidden');
+                    document.getElementById('v-total-dues').innerText = '৳' + convertToBanglaNumber(totalPaid);
+                }
+            } else {
+                editBtn.classList.add('hidden');
+                duesBtn.classList.add('hidden');
+                if (duesInfo) duesInfo.classList.add('hidden');
+            }
+            openModal('profile-modal');
+        }
+
+        window.renderTransactions = function() {
+            const list = document.getElementById('transactions-list');
+            list.innerHTML = '';
+            
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            let filteredTrans = transactionsData.filter(t => {
+                if (currentAdminRole === 'union') return t.union === currentAdminUnion;
+                return true;
+            });
+
+            filteredTrans.sort((a, b) => b.createdAt - a.createdAt);
+
+            filteredTrans.forEach(t => {
+                const isIncome = t.type === 'income';
+                if (isIncome) totalIncome += Number(t.amount);
+                else totalExpense += Number(t.amount);
+
+                const icon = isIncome ? 'fa-arrow-down text-green-600 bg-green-100' : 'fa-arrow-up text-red-600 bg-red-100';
+                const sign = isIncome ? '+' : '-';
+                const color = isIncome ? 'text-green-700' : 'text-red-700';
+                
+                let dateStr = 'অজানা তারিখ';
+                if(t.createdAt) {
+                    const d = new Date(t.createdAt.seconds * 1000);
+                    dateStr = d.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' });
+                }
+
+                const html = `
+                <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center ${icon} shrink-0"><i class="fas"></i></div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm leading-tight">${t.category}</h4>
+                            <p class="text-[11px] text-gray-500">${dateStr} • ${t.union}</p>
+                            ${t.memberName ? `<p class="text-[11px] font-bold text-blue-600 mt-0.5"><i class="fas fa-user mr-1"></i>${t.memberName}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <h3 class="font-bold ${color} text-lg">${sign}৳${convertToBanglaNumber(t.amount)}</h3>
+                        <button onclick="deleteTransaction('${t.id}')" class="text-red-400 hover:text-red-600 text-xs mt-1"><i class="fas fa-trash"></i> মুছুন</button>
+                    </div>
+                </div>`;
+                list.innerHTML += html;
+            });
+
+            if (filteredTrans.length === 0) {
+                list.innerHTML = '<div class="text-center p-6 text-gray-400"><i class="fas fa-receipt text-3xl mb-2"></i><p>কোনো লেনদেন পাওয়া যায়নি</p></div>';
+            }
+
+            document.getElementById('acc-total-income').innerText = '৳' + convertToBanglaNumber(totalIncome);
+            document.getElementById('acc-total-expense').innerText = '৳' + convertToBanglaNumber(totalExpense);
+            document.getElementById('acc-current-balance').innerText = '৳' + convertToBanglaNumber(totalIncome - totalExpense);
+        }
+
+        window.openTransactionModal = function() {
+            document.getElementById('transaction-form').reset();
+            document.getElementById('t-member-id').value = '';
+            document.getElementById('t-member-info').classList.add('hidden');
+            document.getElementById('t-month-container').classList.add('hidden');
+            
+            document.getElementById('t-modal-title').innerText = 'নতুন আয়/ব্যয় যুক্ত করুন';
+            document.getElementById('t-type').disabled = false;
+            document.getElementById('t-category').value = '';
+            document.getElementById('t-month').value = '';
+            
+            openModal('transaction-modal');
+        }
+
+        window.openTransactionModalForMember = function(memberId) {
+            const m = membersData.find(x => x.id === memberId);
+            if(!m) return;
+
+            document.getElementById('transaction-form').reset();
+            document.getElementById('t-member-id').value = m.id;
+            
+            document.getElementById('t-member-info').classList.remove('hidden');
+            document.getElementById('t-member-name').innerText = m.name;
+            document.getElementById('t-member-union').innerText = m.union;
+            document.getElementById('t-month-container').classList.remove('hidden');
+            
+            document.getElementById('t-modal-title').innerText = 'ইয়ানত/টাকা জমা';
+            document.getElementById('t-type').value = 'income';
+            document.getElementById('t-type').disabled = true; 
+            document.getElementById('t-category').value = 'মাসিক ইয়ানত';
+            document.getElementById('t-month').value = '';
+            
+            openModal('transaction-modal');
+        }
+
+        window.handleTransactionSubmit = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-transaction');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...'; btn.disabled = true;
+
+            const memberId = document.getElementById('t-member-id').value;
+            let unionName = currentAdminRole === 'union' ? currentAdminUnion : 'উপজেলা শাখা';
+            let memberName = '';
+            
+            if (memberId) {
+                const m = membersData.find(x => x.id === memberId);
+                if (m) {
+                    unionName = m.union;
+                    memberName = m.name;
+                }
+            }
+
+            const data = {
+                type: document.getElementById('t-type').value,
+                category: document.getElementById('t-category').value,
+                amount: Number(document.getElementById('t-amount').value),
+                union: unionName,
+                createdAt: serverTimestamp()
+            };
+            
+            const selectedMonth = document.getElementById('t-month').value;
+            if (selectedMonth) data.forMonth = selectedMonth;
+            
+            if(memberId) {
+                data.memberId = memberId;
+                data.memberName = memberName;
+            }
+
+            try {
+                await addDoc(collection(db, 'transactions'), data);
+                showToast('লেনদেন সফলভাবে সেভ হয়েছে!');
+                closeModal('transaction-modal');
+            } catch(error) {
+                showToast('সেভ করতে সমস্যা হয়েছে!', 'error');
+            }
+            btn.innerHTML = 'সেভ করুন'; btn.disabled = false;
+        }
+
+        window.deleteTransaction = function(id) {
+            document.getElementById('btn-confirm-yes').onclick = async () => {
+                try {
+                    await deleteDoc(doc(db, 'transactions', id));
+                    showToast('লেনদেনটি মুছে ফেলা হয়েছে!');
+                    closeModal('confirm-modal');
+                } catch(e) { showToast('সমস্যা হয়েছে!', 'error'); }
+            };
+            openModal('confirm-modal');
+        }
+
+        window.openMemberModal = function() {
+            document.getElementById('member-form').reset();
+            document.getElementById('m-id').value = '';
+            document.getElementById('m-photo-preview').classList.add('hidden');
+            document.getElementById('photo-placeholder-icon').classList.remove('hidden');
+            document.getElementById('btn-remove-photo').classList.add('hidden');
+            currentPhotoUrl = '';
+            
+            const uSelect = document.getElementById('m-union');
+            if(currentAdminRole === 'union') { uSelect.value = currentAdminUnion; uSelect.disabled = true; } 
+            else { uSelect.disabled = false; }
+            document.getElementById('modal-title').innerText = currentTab === 'members' ? 'সদস্য যুক্ত করুন' : 'দায়িত্বশীল যুক্ত করুন';
+            document.getElementById('m-designation').value = currentTab === 'members' ? 'সদস্য' : '';
+            openModal('member-modal');
+        }
+
+        window.handleMemberSubmit = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-member');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সংরক্ষণ হচ্ছে...'; btn.disabled = true;
+
+            const uSelect = document.getElementById('m-union');
+            const data = {
+                name: document.getElementById('m-name').value,
+                designation: document.getElementById('m-designation').value,
+                union: currentAdminRole === 'union' ? currentAdminUnion : uSelect.value,
+                phone: document.getElementById('m-phone').value,
+                updatedAt: serverTimestamp()
+            };
+            if (currentPhotoUrl === 'REMOVED') data.photoUrl = "";
+            else if (currentPhotoUrl) data.photoUrl = currentPhotoUrl;
+
+            try {
+                const id = document.getElementById('m-id').value;
+                if(id) await updateDoc(doc(db, 'members', id), data);
+                else { data.createdAt = serverTimestamp(); await addDoc(collection(db, 'members'), data); }
+                showToast('সফলভাবে সংরক্ষণ করা হয়েছে!');
+                closeModal('member-modal');
+            } catch(e) { showToast('সমস্যা হয়েছে!', 'error'); }
+            btn.innerHTML = 'সংরক্ষণ করুন'; btn.disabled = false;
+        }
+
+        window.editMember = function(id) {
+            const m = membersData.find(x => x.id === id);
+            if(!m) return;
+            document.getElementById('m-id').value = m.id;
+            document.getElementById('m-name').value = m.name;
+            document.getElementById('m-designation').value = m.designation;
+            document.getElementById('m-phone').value = m.phone;
+            
+            const uSelect = document.getElementById('m-union');
+            uSelect.value = m.union; uSelect.disabled = (currentAdminRole === 'union');
+
+            const pPreview = document.getElementById('m-photo-preview');
+            const pIcon = document.getElementById('photo-placeholder-icon');
+            const pRemoveBtn = document.getElementById('btn-remove-photo');
+            
+            if(m.photoUrl && m.photoUrl !== "") { 
+                pPreview.src = m.photoUrl; pPreview.classList.remove('hidden'); pIcon.classList.add('hidden'); pRemoveBtn.classList.remove('hidden'); currentPhotoUrl = m.photoUrl; 
+            } else { 
+                pPreview.classList.add('hidden'); pIcon.classList.remove('hidden'); pRemoveBtn.classList.add('hidden'); currentPhotoUrl = ''; 
+            }
+            document.getElementById('modal-title').innerText = 'তথ্য সম্পাদনা';
+            openModal('member-modal');
+        }
+
+        window.deleteMemberInit = function(id) {
+            document.getElementById('btn-confirm-yes').onclick = async () => {
+                try { await deleteDoc(doc(db, 'members', id)); showToast('সফলভাবে মুছে ফেলা হয়েছে!'); closeModal('confirm-modal'); } 
+                catch(e) { showToast('সমস্যা হয়েছে!', 'error'); }
+            };
+            openModal('confirm-modal');
+        }
+
+        window.copyPhone = function() { fallbackCopyTextToClipboard(document.getElementById('v-phone').innerText, 'নাম্বারটি কপি করা হয়েছে!'); }
+        window.openModal = function(id) { const m = document.getElementById(id); m.classList.remove('hidden'); m.classList.add('flex'); setTimeout(() => { document.getElementById(id+'-content').classList.remove('scale-95', 'opacity-0'); }, 10); }
+        window.closeModal = function(id) { document.getElementById(id+'-content').classList.add('scale-95', 'opacity-0'); setTimeout(() => { const m = document.getElementById(id); m.classList.add('hidden'); m.classList.remove('flex'); }, 300); }
+        window.showToast = function(msg, type='success') {
+            const c = document.getElementById('toast-container'); const t = document.createElement('div');
+            const bg = type === 'success' ? 'bg-gray-800' : (type==='info'?'bg-blue-600':'bg-red-600');
+            const icon = type === 'success' ? 'fa-check-circle text-green-400' : (type==='info'?'fa-info-circle text-blue-200':'fa-exclamation-triangle text-red-200');
+            t.className = `${bg} text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-10 opacity-0 transition-all pointer-events-auto border border-white/10 font-medium text-sm`;
+            t.innerHTML = `<i class="fas ${icon} text-lg shadow-sm"></i> <span>${msg}</span>`;
+            c.appendChild(t); setTimeout(() => t.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => { t.classList.add('opacity-0', 'translate-y-10'); setTimeout(()=>t.remove(), 300); }, 4000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { initUI(); initializeAppSystem(); });
+    </script>
+</body>
+</html>
