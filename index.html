@@ -295,7 +295,7 @@
                     
                     <div class="mt-4 pt-3 border-t border-gray-100">
                         <strong class="text-xs text-gray-500 block mb-2">বর্তমান ইউনিয়ন অ্যাডমিনরা:</strong>
-                        <div id="admin-list-display" class="text-xs text-gray-700 space-y-1 bg-gray-50 p-2 rounded border"></div>
+                        <div id="admin-list-display" class="text-xs text-gray-700 space-y-1.5 bg-gray-50 p-2 rounded border"></div>
                     </div>
                 </div>
 
@@ -869,11 +869,9 @@
             const memberType = document.getElementById('report-member-type').value;
             const showUnionCol = (selectedUnion === 'all');
 
-            // Set Report Header Info
             document.getElementById('rep-branch-title').innerText = selectedUnion === 'all' ? 'বাকেরগঞ্জ উপজেলা ও সকল ইউনিয়ন শাখা' : selectedUnion;
             document.getElementById('rep-date').innerText = new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
             
-            // Build Period Title Badge
             let periodTitle = 'আর্থিক ও ইয়ানত আদায়ের পূর্ণাঙ্গ রিপোর্ট';
             if (selectedMonth !== 'all' && selectedYear !== 'all') {
                 periodTitle = `মাসিক আর্থিক ও ইয়ানত রিপোর্ট — ${selectedMonth}, ${convertToBanglaNumber(selectedYear)}`;
@@ -888,14 +886,12 @@
             document.getElementById('rep-eyanat-subtitle').innerText = subLabel;
             document.getElementById('rep-th-months').innerText = selectedMonth === 'all' ? 'আদায়কৃত মাস ও সংখ্যা' : `অবস্থা (${selectedMonth})`;
 
-            // Toggle Union Column visibility
             document.getElementById('rep-th-union').style.display = showUnionCol ? '' : 'none';
             document.getElementById('rep-exp-th-union').style.display = showUnionCol ? '' : 'none';
             document.getElementById('rep-inc-th-union').style.display = showUnionCol ? '' : 'none';
             document.getElementById('rep-eyanat-footer-colspan').colSpan = showUnionCol ? 4 : 3;
             document.getElementById('rep-exp-footer-colspan').colSpan = showUnionCol ? 4 : 3;
 
-            // Filter Transactions for Selected Branch & Time Period
             const branchTrans = transactionsData.filter(t => isSameUnion(t.union, selectedUnion) && matchesReportPeriod(t, selectedMonth, selectedYear));
             let totalIncome = 0;
             let totalExpense = 0;
@@ -916,7 +912,6 @@
             document.getElementById('rep-total-expense').innerText = '৳' + convertToBanglaNumber(totalExpense);
             document.getElementById('rep-current-balance').innerText = '৳' + convertToBanglaNumber(totalIncome - totalExpense);
 
-            // 1. Build Member Eyanat Table
             let filteredMembers = membersData.filter(m => {
                 const matchU = (selectedUnion === 'all') ? true : m.union === selectedUnion;
                 let matchT = true;
@@ -987,7 +982,6 @@
             }
             document.getElementById('rep-eyanat-total').innerText = '৳' + convertToBanglaNumber(totalMemberEyanat);
 
-            // 2. Build Expense Table
             expenseList.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
             const expTbody = document.getElementById('rep-expense-tbody');
             expTbody.innerHTML = '';
@@ -1010,7 +1004,6 @@
             }
             document.getElementById('rep-expense-table-total').innerText = '৳' + convertToBanglaNumber(totalExpense);
 
-            // 3. Build Other Income Table (if any)
             const otherIncSec = document.getElementById('rep-other-income-section');
             const otherIncTbody = document.getElementById('rep-other-income-tbody');
             otherIncTbody.innerHTML = '';
@@ -1038,7 +1031,6 @@
             window.print();
         }
 
-        // --- COPY HELPER ---
         function fallbackCopyTextToClipboard(text, successMsg) {
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(text).then(() => {
@@ -1076,7 +1068,6 @@
             fallbackCopyTextToClipboard(textArea.value, 'তালিকাটি কপি করা হয়েছে!');
         }
 
-        // --- HELPER: GENERATE EXPORT MODAL CONTENT ---
         function showExportModalWithList(list, headerTitle, showUnionPerItem) {
             if (list.length === 0) {
                 showToast('এই শাখায় কোনো তথ্য পাওয়া যায়নি!', 'error');
@@ -1102,7 +1093,6 @@
             openModal('export-modal');
         }
 
-        // --- EXPORT FROM MASTER SETTINGS (ANY BRANCH/TYPE) ---
         window.exportSelectedBranchData = function() {
             const selectedUnion = document.getElementById('export-union-select').value;
             const selectedType = document.getElementById('export-type-select').value;
@@ -1124,7 +1114,6 @@
             }, 300);
         }
 
-        // --- QUICK EXPORT FROM MAIN SCREEN FILTER ---
         window.exportCurrentFilteredList = function() {
             const unionFilter = document.getElementById('filter-union').value;
             const search = document.getElementById('search-input').value.toLowerCase();
@@ -1144,7 +1133,6 @@
             showExportModalWithList(filteredList, `${unionLabel} - ${typeLabel}`, showUnionPerItem);
         }
 
-        // --- PHOTO UPLOAD (ImgBB) ---
         window.previewImage = async function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1222,14 +1210,38 @@
             btn.innerHTML = 'অ্যাডমিন যুক্ত করুন'; btn.disabled = false;
         }
 
+        window.removeUnionAdmin = function(phone) {
+            const adminInfo = unionAdminsList[phone];
+            if (!adminInfo) return;
+            document.getElementById('btn-confirm-yes').onclick = async () => {
+                const updatedList = { ...unionAdminsList };
+                delete updatedList[phone];
+                try {
+                    await setDoc(doc(db, 'settings', 'admins'), { data: JSON.stringify(updatedList) });
+                    unionAdminsList = updatedList;
+                    showToast(`${adminInfo.union} এর অ্যাডমিন (${phone}) বাদ দেওয়া হয়েছে!`);
+                    updateAdminListDisplay();
+                    closeModal('confirm-modal');
+                } catch(e) {
+                    showToast('অ্যাডমিন বাদ দিতে সমস্যা হয়েছে!', 'error');
+                }
+            };
+            openModal('confirm-modal');
+        }
+
         function updateAdminListDisplay() {
             const div = document.getElementById('admin-list-display');
             div.innerHTML = '';
             let hasAdmin = false;
             for (const [phone, data] of Object.entries(unionAdminsList)) {
-                div.innerHTML += `<div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
-                    <span><i class="fas fa-user-shield text-gray-400 mr-1"></i> ${phone}</span>
-                    <span class="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold">${data.union}</span>
+                div.innerHTML += `<div class="flex justify-between items-center py-1.5 px-2 bg-white border border-gray-200 rounded">
+                    <div>
+                        <div class="font-bold text-gray-800"><i class="fas fa-user-shield text-blue-600 mr-1"></i> ${phone}</div>
+                        <div class="text-[10px] text-gray-500">${data.union} • পিন: ${data.pin}</div>
+                    </div>
+                    <button type="button" onclick="removeUnionAdmin('${phone}')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-2.5 py-1 rounded text-[11px] font-bold transition" title="অ্যাডমিন বাদ দিন">
+                        <i class="fas fa-user-times mr-1"></i> বাদ দিন
+                    </button>
                 </div>`;
                 hasAdmin = true;
             }
@@ -1282,6 +1294,10 @@
                         });
                         onSnapshot(doc(db, 'settings', 'admins'), (docSnap) => {
                             if (docSnap.exists() && docSnap.data().data) unionAdminsList = JSON.parse(docSnap.data().data);
+                            else unionAdminsList = {};
+                            if (!document.getElementById('settings-modal').classList.contains('hidden')) {
+                                updateAdminListDisplay();
+                            }
                         });
                         onSnapshot(collection(db, 'members'), (snapshot) => {
                             membersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
