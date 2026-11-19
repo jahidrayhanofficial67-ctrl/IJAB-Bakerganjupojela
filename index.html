@@ -428,6 +428,7 @@
             </div>
             <div class="p-6 bg-gray-50">
                 <form id="transaction-form" onsubmit="handleTransactionSubmit(event)">
+                    <input type="hidden" id="t-id">
                     <input type="hidden" id="t-member-id">
                     
                     <div id="t-member-info" class="hidden mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 text-center">
@@ -1578,7 +1579,10 @@
                     </div>
                     <div class="text-right">
                         <h3 class="font-bold ${color} text-lg">${sign}৳${convertToBanglaNumber(t.amount)}</h3>
-                        <button onclick="deleteTransaction('${t.id}')" class="text-red-400 hover:text-red-600 text-xs mt-1"><i class="fas fa-trash"></i> মুছুন</button>
+                        <div class="flex items-center justify-end gap-3 mt-1">
+                            <button onclick="editTransaction('${t.id}')" class="text-blue-500 hover:text-blue-700 text-xs font-bold"><i class="fas fa-edit"></i> এডিট</button>
+                            <button onclick="deleteTransaction('${t.id}')" class="text-red-400 hover:text-red-600 text-xs"><i class="fas fa-trash"></i> মুছুন</button>
+                        </div>
                     </div>
                 </div>`;
                 list.innerHTML += html;
@@ -1595,6 +1599,7 @@
 
         window.openTransactionModal = function() {
             document.getElementById('transaction-form').reset();
+            document.getElementById('t-id').value = '';
             document.getElementById('t-member-id').value = '';
             document.getElementById('t-member-info').classList.add('hidden');
             document.getElementById('t-month-container').classList.add('hidden');
@@ -1616,11 +1621,50 @@
             openModal('transaction-modal');
         }
 
+        window.editTransaction = function(id) {
+            const t = transactionsData.find(x => x.id === id);
+            if (!t) return;
+
+            document.getElementById('transaction-form').reset();
+            document.getElementById('t-id').value = t.id;
+            document.getElementById('t-member-id').value = t.memberId || '';
+
+            const unionContainer = document.getElementById('t-union-container');
+            const unionSelect = document.getElementById('t-union');
+            if (t.memberId) {
+                const m = membersData.find(x => x.id === t.memberId);
+                document.getElementById('t-member-info').classList.remove('hidden');
+                document.getElementById('t-member-name').innerText = t.memberName || (m ? m.name : 'দায়িত্বশীল/সদস্য');
+                document.getElementById('t-member-union').innerText = t.union || (m ? m.union : '');
+                unionContainer.classList.add('hidden');
+                document.getElementById('t-month-container').classList.remove('hidden');
+            } else {
+                document.getElementById('t-member-info').classList.add('hidden');
+                document.getElementById('t-month-container').classList.add('hidden');
+                if (currentAdminRole === 'master') {
+                    unionContainer.classList.remove('hidden');
+                    unionSelect.value = t.union || 'বাকেরগঞ্জ উপজেলা শাখা';
+                } else {
+                    unionContainer.classList.add('hidden');
+                }
+            }
+
+            document.getElementById('t-modal-title').innerText = 'লেনদেন সম্পাদনা করুন';
+            document.getElementById('t-type').value = t.type || 'expense';
+            document.getElementById('t-type').disabled = false;
+            document.getElementById('t-category').value = t.category || '';
+            document.getElementById('t-month').value = t.forMonth || '';
+            document.getElementById('t-amount').value = t.amount || '';
+
+            openModal('transaction-modal');
+        }
+
         window.openTransactionModalForMember = function(memberId) {
             const m = membersData.find(x => x.id === memberId);
             if(!m) return;
 
             document.getElementById('transaction-form').reset();
+            document.getElementById('t-id').value = '';
             document.getElementById('t-member-id').value = m.id;
             
             document.getElementById('t-member-info').classList.remove('hidden');
@@ -1643,9 +1687,12 @@
             const btn = document.getElementById('btn-save-transaction');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...'; btn.disabled = true;
 
+            const transId = document.getElementById('t-id').value;
+            const existingTrans = transId ? transactionsData.find(x => x.id === transId) : null;
             const memberId = document.getElementById('t-member-id').value;
-            let unionName = currentAdminRole === 'union' ? currentAdminUnion : (document.getElementById('t-union').value || 'বাকেরগঞ্জ উপজেলা শাখা');
-            let memberName = '';
+
+            let unionName = currentAdminRole === 'union' ? currentAdminUnion : (document.getElementById('t-union').value || existingTrans?.union || 'বাকেরগঞ্জ উপজেলা শাখা');
+            let memberName = existingTrans?.memberName || '';
             
             if (memberId) {
                 const m = membersData.find(x => x.id === memberId);
@@ -1660,11 +1707,11 @@
                 category: document.getElementById('t-category').value,
                 amount: Number(document.getElementById('t-amount').value),
                 union: unionName,
-                createdAt: serverTimestamp()
+                updatedAt: serverTimestamp()
             };
             
             const selectedMonth = document.getElementById('t-month').value;
-            if (selectedMonth) data.forMonth = selectedMonth;
+            data.forMonth = selectedMonth || "";
             
             if(memberId) {
                 data.memberId = memberId;
@@ -1672,8 +1719,14 @@
             }
 
             try {
-                await addDoc(collection(db, 'transactions'), data);
-                showToast('লেনদেন সফলভাবে সেভ হয়েছে!');
+                if (transId) {
+                    await updateDoc(doc(db, 'transactions', transId), data);
+                    showToast('লেনদেন সফলভাবে আপডেট হয়েছে!');
+                } else {
+                    data.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'transactions'), data);
+                    showToast('লেনদেন সফলভাবে সেভ হয়েছে!');
+                }
                 closeModal('transaction-modal');
             } catch(error) {
                 showToast('সেভ করতে সমস্যা হয়েছে!', 'error');
