@@ -1179,6 +1179,7 @@
 
             const presentNames = checkboxes.filter(c => c.checked).map(c => c.dataset.name);
             const presentIds = checkboxes.filter(c => c.checked).map(c => c.value);
+            const absentNames = checkboxes.filter(c => !c.checked).map(c => c.dataset.name);
 
             const btn = document.getElementById('btn-save-attendance');
             btn.disabled = true; btn.innerText = 'সংরক্ষণ হচ্ছে...';
@@ -1191,6 +1192,7 @@
                     totalCount: checkboxes.length,
                     presentIds,
                     presentNames,
+                    absentNames,
                     createdAt: serverTimestamp()
                 });
                 document.getElementById('att-program-name').value = '';
@@ -1203,6 +1205,33 @@
             btn.disabled = false; btn.innerHTML = '<i class="fas fa-save mr-1"></i> হাজিরা সংরক্ষণ করুন';
         };
 
+        window.copyAttendanceReport = function(id) {
+            const a = attendanceData.find(x => x.id === id);
+            if (!a) return;
+            const pct = a.totalCount > 0 ? Math.round((a.presentCount / a.totalCount) * 100) : 0;
+            const presentList = a.presentNames || [];
+            let absentList = a.absentNames || [];
+            if (!a.absentNames && a.presentIds) {
+                absentList = membersData
+                    .filter(m => m.union === a.union && !isSudhiMember(m) && m.designation !== 'সদস্য' && !a.presentIds.includes(m.id))
+                    .map(m => m.name);
+            }
+
+            let text = `*ইসলামী যুব আন্দোলন বাংলাদেশ*\n`;
+            text += `*${a.union}* — প্রোগ্রাম হাজিরা রিপোর্ট\n\n`;
+            text += `📌 *প্রোগ্রাম:* ${a.programName}\n`;
+            text += `📅 *তারিখ:* ${a.date}\n`;
+            text += `📊 *উপস্থিতির হার:* ${convertToBanglaNumber(pct)}% (${convertToBanglaNumber(a.presentCount)}/${convertToBanglaNumber(a.totalCount)} জন)\n\n`;
+            text += `✅ *উপস্থিত দায়িত্বশীল (${convertToBanglaNumber(presentList.length)} জন):*\n`;
+            text += presentList.length > 0 ? presentList.map((n, i) => `${convertToBanglaNumber(i + 1)}. ${n}`).join('\n') : 'কেউ উপস্থিত ছিলেন না';
+            if (absentList.length > 0) {
+                text += `\n\n❌ *অনুপস্থিত দায়িত্বশীল (${convertToBanglaNumber(absentList.length)} জন):*\n`;
+                text += absentList.map((n, i) => `${convertToBanglaNumber(i + 1)}. ${n}`).join('\n');
+            }
+            text += `\n\nজাযাকাল্লাহু খাইরান।`;
+            fallbackCopyTextToClipboard(text, 'হাজিরা রিপোর্ট কপি হয়েছে! এখন গ্রুপে পেস্ট করুন।');
+        };
+
         function renderAttendanceHistory() {
             const container = document.getElementById('att-history-list');
             if (!container) return;
@@ -1213,17 +1242,30 @@
                 container.innerHTML = '<p class="text-center text-xs text-gray-400 py-4">এখনো কোনো হাজিরা সংরক্ষণ করা হয়নি</p>';
                 return;
             }
-            container.innerHTML = list.map(a => `
-                <div class="p-3 border border-gray-200 rounded-lg bg-gray-50 flex justify-between items-start gap-2">
-                    <div>
-                        <div class="font-bold text-gray-800 text-sm">${a.programName}</div>
-                        <div class="text-xs text-gray-500 mt-0.5"><i class="far fa-calendar-alt mr-1"></i>${a.date} • ${a.union}</div>
-                        <div class="text-xs font-bold text-green-700 mt-1">উপস্থিত: ${convertToBanglaNumber(a.presentCount)} / ${convertToBanglaNumber(a.totalCount)} জন</div>
-                        ${a.presentNames?.length ? `<p class="text-[11px] text-gray-600 mt-1">উপস্থিত ছিলেন: ${a.presentNames.join(', ')}</p>` : ''}
+            container.innerHTML = list.map(a => {
+                const pct = a.totalCount > 0 ? Math.round((a.presentCount / a.totalCount) * 100) : 0;
+                const badgeCls = pct >= 75 ? 'bg-green-100 text-green-800 border-green-300' : (pct >= 50 ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-red-100 text-red-700 border-red-300');
+                return `
+                <div class="p-3 border border-gray-200 rounded-lg bg-gray-50 flex flex-col gap-2">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <div class="font-bold text-gray-800 text-sm">${a.programName}</div>
+                            <div class="text-xs text-gray-500 mt-0.5"><i class="far fa-calendar-alt mr-1"></i>${a.date} • ${a.union}</div>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                <span class="text-xs font-bold text-green-700">উপস্থিত: ${convertToBanglaNumber(a.presentCount)} / ${convertToBanglaNumber(a.totalCount)} জন</span>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full border ${badgeCls}">হার: ${convertToBanglaNumber(pct)}%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button onclick="copyAttendanceReport('${a.id}')" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1 transition">
+                                <i class="fab fa-whatsapp"></i> রিপোর্ট কপি
+                            </button>
+                            <button onclick="deleteAttendanceRecord('${a.id}')" class="text-red-400 hover:text-red-600 text-xs p-1.5"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
-                    <button onclick="deleteAttendanceRecord('${a.id}')" class="text-red-400 hover:text-red-600 text-xs p-1"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
+                    ${a.presentNames?.length ? `<p class="text-[11px] text-gray-600 bg-white p-2 rounded border border-gray-100"><strong>উপস্থিত:</strong> ${a.presentNames.join(', ')}</p>` : ''}
+                </div>`;
+            }).join('');
         }
 
         window.deleteAttendanceRecord = function(id) {
