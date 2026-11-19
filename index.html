@@ -194,7 +194,7 @@
         </div>
     </div>
 
-    <!-- SETTINGS MODAL (UPDATED WITH EXPORT BUTTON) -->
+    <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[90vh] transition-all transform scale-95 opacity-0" id="settings-modal-content">
             <div class="dynamic-bg p-4 text-white flex justify-between items-center shrink-0">
@@ -203,7 +203,7 @@
             </div>
             <div class="p-6 overflow-y-auto flex-1 bg-gray-50">
                 
-                <!-- NEW: EXPORT DATA SECTION -->
+                <!-- EXPORT DATA SECTION -->
                 <div class="mb-6 bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
                     <h4 class="font-bold text-gray-800 mb-2 border-b pb-2 flex items-center gap-2"><i class="fas fa-file-export text-green-600"></i> ডাটা এক্সপোর্ট</h4>
                     <p class="text-xs text-gray-500 mb-3 font-bold">যেকোনো শাখা বা ইউনিয়নের দায়িত্বশীল ও সদস্যদের নাম ও নাম্বার আলাদাভাবে কপি করুন।</p>
@@ -281,6 +281,7 @@
                             </button>
                             <input type="file" id="m-photo" accept="image/*" class="hidden" onchange="previewImage(event)">
                         </div>
+                        <p id="photo-upload-status" class="text-xs text-gray-400 hidden"></p>
                     </div>
                     
                     <div class="space-y-4">
@@ -313,7 +314,7 @@
 
     <!-- VIEW PROFILE (REVIEW) MODAL -->
     <div id="profile-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0 relative" id="profile-modal-content">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0 relative max-h-[90vh] overflow-y-auto" id="profile-modal-content">
             <div class="h-32 dynamic-bg w-full relative">
                 <button onclick="closeModal('profile-modal')" class="absolute top-4 right-4 text-white/80 hover:text-white bg-black/20 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition"><i class="fas fa-times"></i></button>
                 <button id="btn-edit-from-profile" class="hidden absolute top-4 left-4 text-white/80 hover:text-white bg-black/20 px-3 py-1.5 rounded-full flex items-center gap-2 backdrop-blur-sm transition text-sm font-bold shadow-sm"><i class="fas fa-edit"></i> এডিট</button>
@@ -442,7 +443,7 @@
         </div>
     </div>
 
-    <!-- EXPORT RESULT MODAL (NEW) -->
+    <!-- EXPORT RESULT MODAL -->
     <div id="export-modal" class="fixed inset-0 bg-black/50 z-[75] hidden flex-col items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0 flex flex-col max-h-[85vh]" id="export-modal-content">
             <div class="dynamic-bg p-4 text-white flex justify-between items-center shrink-0">
@@ -478,6 +479,7 @@
             messagingSenderId: "893273342378",
             appId: "1:893273342378:web:91d803ada0fc7649cdebd3"
         };
+        const IMGBB_API_KEY = "83d9e310c0816f055a8d15e6bf44a1f2";
 
         let db, auth;
         let membersData = [];
@@ -554,6 +556,48 @@
             document.getElementById('designations-textarea').value = APP_DESIGNATIONS.join('\n');
             const currentColor = document.documentElement.style.getPropertyValue('--color-primary') || '#0f5132';
             document.getElementById('theme-color-picker').value = currentColor.trim();
+            updateAdminListDisplay();
+            openModal('settings-modal');
+        }
+
+        // --- COPY HELPER ---
+        function fallbackCopyTextToClipboard(text, successMsg) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(successMsg);
+                }).catch(() => {
+                    execCopyFallback(text, successMsg);
+                });
+            } else {
+                execCopyFallback(text, successMsg);
+            }
+        }
+
+        function execCopyFallback(text, successMsg) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) showToast(successMsg);
+                else showToast('কপি করতে সমস্যা হয়েছে! ম্যানুয়ালি কপি করুন।', 'error');
+            } catch (err) {
+                showToast('কপি করতে সমস্যা হয়েছে! ম্যানুয়ালি কপি করুন।', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        window.manualCopyExportText = function() {
+            const textArea = document.getElementById('export-textarea');
+            textArea.focus();
+            textArea.select();
+            fallbackCopyTextToClipboard(textArea.value, 'তালিকাটি কপি করা হয়েছে!');
+        }
+
         // --- HELPER: GENERATE EXPORT MODAL CONTENT ---
         function showExportModalWithList(list, headerTitle, showUnionPerItem) {
             if (list.length === 0) {
@@ -561,7 +605,6 @@
                 return;
             }
 
-            // পদবি অনুযায়ী সাজানো
             list.sort((a, b) => {
                 let rA = APP_DESIGNATIONS.indexOf(a.designation);
                 let rB = APP_DESIGNATIONS.indexOf(b.designation);
@@ -621,6 +664,64 @@
             const showUnionPerItem = (currentAdminRole !== 'union' && unionFilter === 'all');
 
             showExportModalWithList(filteredList, `${unionLabel} - ${typeLabel}`, showUnionPerItem);
+        }
+
+        // --- PHOTO UPLOAD (ImgBB) ---
+        window.previewImage = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const pPreview = document.getElementById('m-photo-preview');
+            const pIcon = document.getElementById('photo-placeholder-icon');
+            const pRemoveBtn = document.getElementById('btn-remove-photo');
+            const statusEl = document.getElementById('photo-upload-status');
+            const saveBtn = document.getElementById('btn-save-member');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pPreview.src = e.target.result;
+                pPreview.classList.remove('hidden');
+                pIcon.classList.add('hidden');
+                pRemoveBtn.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+
+            statusEl.innerText = 'ছবি আপলোড হচ্ছে...';
+            statusEl.classList.remove('hidden', 'text-red-500', 'text-green-600');
+            statusEl.classList.add('text-blue-600');
+            saveBtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+                if (json.success) {
+                    currentPhotoUrl = json.data.url;
+                    statusEl.innerText = 'ছবি আপলোড সম্পন্ন হয়েছে!';
+                    statusEl.classList.replace('text-blue-600', 'text-green-600');
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (err) {
+                statusEl.innerText = 'ছবি আপলোড ব্যর্থ হয়েছে!';
+                statusEl.classList.replace('text-blue-600', 'text-red-500');
+                showToast('ছবি আপলোড করতে সমস্যা হয়েছে!', 'error');
+            }
+            saveBtn.disabled = false;
+        }
+
+        window.removePhoto = function() {
+            document.getElementById('m-photo').value = '';
+            document.getElementById('m-photo-preview').src = '';
+            document.getElementById('m-photo-preview').classList.add('hidden');
+            document.getElementById('photo-placeholder-icon').classList.remove('hidden');
+            document.getElementById('btn-remove-photo').classList.add('hidden');
+            document.getElementById('photo-upload-status').classList.add('hidden');
+            currentPhotoUrl = 'REMOVED';
         }
 
         window.createUnionAdmin = async function() {
@@ -715,7 +816,10 @@
                         });
                     }
                 });
-            } catch(e) { document.getElementById('initial-loader').innerHTML = '<p class="text-red-500 font-bold">ইন্টারনেট সংযোগ নেই!</p>'; }
+            } catch(e) {
+                console.error(e);
+                document.getElementById('initial-loader').innerHTML = '<p class="text-red-500 font-bold p-4 text-center">ডাটাবেস সংযোগে সমস্যা হয়েছে! ইন্টারনেট চেক করে রিফ্রেশ দিন।</p>';
+            }
         }
 
         window.handleLogin = function() {
@@ -859,7 +963,7 @@
             let paidMonths = [];
             
             let memberTrans = transactionsData.filter(t => t.memberId === id);
-            memberTrans.sort((a, b) => b.createdAt - a.createdAt);
+            memberTrans.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
             memberTrans.forEach(t => {
                 if (t.type === 'income') {
@@ -941,7 +1045,7 @@
                 return true;
             });
 
-            filteredTrans.sort((a, b) => b.createdAt - a.createdAt);
+            filteredTrans.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
             filteredTrans.forEach(t => {
                 const isIncome = t.type === 'income';
@@ -961,7 +1065,7 @@
                 const html = `
                 <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center ${icon} shrink-0"><i class="fas"></i></div>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center ${icon} shrink-0"><i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i></div>
                         <div>
                             <h4 class="font-bold text-gray-800 text-sm leading-tight">${t.category}</h4>
                             <p class="text-[11px] text-gray-500">${dateStr} • ${t.union}</p>
@@ -1080,6 +1184,7 @@
             document.getElementById('m-photo-preview').classList.add('hidden');
             document.getElementById('photo-placeholder-icon').classList.remove('hidden');
             document.getElementById('btn-remove-photo').classList.add('hidden');
+            document.getElementById('photo-upload-status').classList.add('hidden');
             currentPhotoUrl = '';
             
             const uSelect = document.getElementById('m-union');
@@ -1123,6 +1228,7 @@
             document.getElementById('m-name').value = m.name;
             document.getElementById('m-designation').value = m.designation;
             document.getElementById('m-phone').value = m.phone;
+            document.getElementById('photo-upload-status').classList.add('hidden');
             
             const uSelect = document.getElementById('m-union');
             uSelect.value = m.union; uSelect.disabled = (currentAdminRole === 'union');
